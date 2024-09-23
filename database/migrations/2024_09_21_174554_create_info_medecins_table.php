@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('numeroLicence');
             $table->integer('annee_experience');
             $table->string('hopital_affiliation');
-            $table->string('langues_parlees');
+            $table->string('langues_parlees')->nullable();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');  // Relation avec user
 
             $table->timestamps();

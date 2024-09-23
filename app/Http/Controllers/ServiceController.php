@@ -17,14 +17,6 @@ class ServiceController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreServiceRequest $request)
@@ -36,14 +28,6 @@ class ServiceController extends Controller
      * Display the specified resource.
      */
     public function show(Service $service)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Service $service)
     {
         //
     }

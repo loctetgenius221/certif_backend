@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('info_patients', function (Blueprint $table) {
             $table->id();
             $table->string('numero_patient');
+            $table->string('ville');
             $table->string('region');
             $table->string('numero_urgence');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');  // Relation avec user
