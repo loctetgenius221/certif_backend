@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\ServiceController;
 
 
 
@@ -22,8 +23,7 @@ Route::middleware("auth")->group(
 );
 
 // Route pour les articles
-
-// Groupe de routes protégé par le middleware JWT et la vérification du rôle "assistant"
+// Groupe de routes protégé par le middleware JWT
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index'); // Liste des articles
 Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show'); // Afficher un article spécifique
 
@@ -33,3 +33,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy'); // Suppression d'un article
 });
 
+// Route pour les services
+Route::middleware('auth')->group(function () {
+    Route::apiResource('services', ServiceController::class);
+});

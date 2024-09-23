@@ -13,7 +13,8 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        //
+        $services = Service::all();
+        return $this->customJsonResponse("Liste des services", $services);
     }
 
     /**
@@ -21,7 +22,17 @@ class ServiceController extends Controller
      */
     public function store(StoreServiceRequest $request)
     {
-        //
+        $service = new Service();
+        $service->nom = $request->nom;
+        $service->description = $request->description;
+
+        $service->save();
+
+        return response()->json([
+            "message" => "Service créé avec succès",
+            "data" => $service
+        ], 201);
+
     }
 
     /**
@@ -29,7 +40,7 @@ class ServiceController extends Controller
      */
     public function show(Service $service)
     {
-        //
+        return $this->customJsonResponse("Service récupéré avec succès", $service);
     }
 
     /**
@@ -37,7 +48,12 @@ class ServiceController extends Controller
      */
     public function update(UpdateServiceRequest $request, Service $service)
     {
-        //
+        $service->fill($request->validated());
+        $service->update();
+        return response()->json([
+            "message" => "Service mis à jour avec succès",
+            "data" => $service
+        ]);
     }
 
     /**
@@ -45,6 +61,7 @@ class ServiceController extends Controller
      */
     public function destroy(Service $service)
     {
-        //
+        $service->delete();
+        return $this->customJsonResponse("Service supprimé avec succès", null, 200);
     }
 }
