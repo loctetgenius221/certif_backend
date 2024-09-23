@@ -12,10 +12,11 @@ use App\Models\InfoAssistant;
 use App\Models\DossierMedicaux;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable, HasRoles;
 
@@ -48,6 +49,17 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // Get the identifier that will be stored in the subject claim of the JWT.
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+
 
     // Relation 1:1 avec InfoMedecin
     public function infoMedecin()
