@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\RendezVousController;
 
 
 
@@ -36,4 +37,10 @@ Route::middleware(['auth:api'])->group(function () {
 // Route pour les services
 Route::middleware('auth')->group(function () {
     Route::apiResource('services', ServiceController::class);
+});
+
+// Route pour les rendez-vous
+Route::middleware('auth')->group(function () {
+    Route::apiResource('rendezvous', RendezVousController::class);
+    Route::put('/rendezvous/{rendezVous}/status', [RendezVousController::class, 'changeStatus']);
 });

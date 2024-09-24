@@ -10,9 +10,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class RendezVous extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $guarded = [];
+
+    protected $dates = ['deleted_at'];
 
     // Relation N:1 avec InfoMedecin
     public function medecin()
