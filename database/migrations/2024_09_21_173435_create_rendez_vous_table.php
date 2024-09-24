@@ -13,14 +13,13 @@ return new class extends Migration
     {
         Schema::create('rendez_vous', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('created_by');
             $table->date('date');
             $table->time('heure_debut');
             $table->time('heure_fin');
             $table->enum('type_rendez_vous', ['présentiel', 'téléconsultation']);
             $table->enum('motif', ['consultation', 'suivi']);
-            $table->enum('status', ['en_attente', 'confirmé', 'annulé']);
+            $table->enum('status', ['à venir', 'en cours', 'terminé', 'annulé'])->default('à venir');
             $table->string('lieu')->nullable();
             $table->timestamps();
 
