@@ -6,11 +6,14 @@ use App\Models\User;
 use App\Models\Consultations;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class RendezVous extends Model
 {
     use HasFactory, SoftDeletes;
+
+    protected $table = 'rendez_vous';
 
     protected $guarded = [];
 
@@ -35,7 +38,7 @@ class RendezVous extends Model
     }
 
     // Relation inverse avec User (créateur du rendez-vous)
-    public function createur()
+    public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
     }

@@ -14,10 +14,6 @@ class RendezVousController extends Controller
     public function index()
     {
         $rendezVous = RendezVous::with(['medecin', 'patient', 'createdBy'])->get();
-        // Filtre pour s'assurer que les utilisateurs ont bien les rôles adéquats
-        $rendezVous = $rendezVous->filter(function($rendezVous) {
-            return $rendezVous->medecin->hasRole('medecin') && $rendezVous->patient->hasRole('patient');
-        });
         return $this->customJsonResponse("Liste des rendez-vous", $rendezVous);
     }
 
@@ -48,6 +44,7 @@ class RendezVousController extends Controller
      */
     public function show(RendezVous $rendezVous)
     {
+        $rendezVous->load(['medecin', 'patient', 'createdBy']);
         return $this->customJsonResponse("Rendez-vous récupéré avec succès", $rendezVous);
     }
 
@@ -75,7 +72,7 @@ class RendezVousController extends Controller
             'status' => 'required|in:à venir,en cours,terminé,annulé'
         ]);
 
-        if (auth()->user()->hasRole('medecin') || auth()->user()->hasRole('administrateur')) {
+        if (auth()->user()->hasRole('médecin') || auth()->user()->hasRole('administrateur')) {
             if ($rendezVous->status !== 'terminé') {
                 $rendezVous->status = $request->status;
                 $rendezVous->update();
@@ -103,7 +100,7 @@ class RendezVousController extends Controller
 
     public function destroy(RendezVous $rendezVous)
     {
-        if (auth()->user()->hasRole('medecin') || auth()->user()->hasRole('administrateur')) {
+        if (auth()->user()->hasRole('médecin') || auth()->user()->hasRole('administrateur')) {
             $rendezVous->delete();
             return response()->json([
                 "message" => "Rendez-vous supprimé avec succès"
@@ -116,9 +113,9 @@ class RendezVousController extends Controller
     }
 
     // Pour restaurer un rendez-vous supprimé
-    public function restore($id)
+    public function restore($rendezVous)
     {
-        $rendezVous = RendezVous::withTrashed()->findOrFail($id);
+        $rendezVous = RendezVous::withTrashed()->findOrFail($rendezVous);
         $rendezVous->restore();
         return $this->customJsonResponse("Rendez-vous restauré avec succès", $rendezVous);
 

@@ -41,6 +41,13 @@ Route::middleware('auth')->group(function () {
 
 // Route pour les rendez-vous
 Route::middleware('auth')->group(function () {
-    Route::apiResource('rendezvous', RendezVousController::class);
+    // Route::apiResource('rendezvous', RendezVousController::class);
+    Route::get('rendezvous', [RendezVousController::class, 'index']);
+    Route::post('rendezvous', [RendezVousController::class, 'store']);
+    Route::get('rendezvous/{rendezVous}', [RendezVousController::class, 'show']);
+    Route::put('rendezvous/{rendezVous}', [RendezVousController::class, 'update']);
+    Route::delete('rendezvous/{rendezVous}', [RendezVousController::class, 'destroy']);
+    Route::post('rendezvous/{rendezVous}', [RendezVousController::class, 'restore']);
     Route::put('/rendezvous/{rendezVous}/status', [RendezVousController::class, 'changeStatus']);
 });
+

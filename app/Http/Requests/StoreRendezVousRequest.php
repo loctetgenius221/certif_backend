@@ -29,7 +29,7 @@ class StoreRendezVousRequest extends FormRequest
                 'exists:users,id',
                 function ($attribute, $value, $fail) {
                     $user = \App\Models\User::find($value);
-                    if (!$user || !$user->hasRole('medecin')) {
+                    if (!$user || !$user->hasRole('médecin')) {
                         $fail('L\'utilisateur sélectionné n\'est pas un médecin.');
                     }
                 }
@@ -44,7 +44,7 @@ class StoreRendezVousRequest extends FormRequest
                     }
                 }
             ],
-            'date' => ['required', 'date'],
+            'date' => ['required', 'date', 'date_format:Y-m-d'], // Format Y-m-d pour la date
             'heure_debut' => ['required', 'date_format:H:i'],
             'heure_fin' => ['required', 'date_format:H:i', 'after:heure_debut'],
             'type_rendez_vous' => ['required', 'in:présentiel,téléconsultation'],

@@ -10,7 +10,6 @@ class AuthController extends Controller
 
     // Méthode pour inscrire un patient
     public function registerPatient(Request $request) {
-        // Validation
         $validator = validator($request->all(), [
             "nom" => ["required", "string"],
             "prenom" => ["required", "string"],
