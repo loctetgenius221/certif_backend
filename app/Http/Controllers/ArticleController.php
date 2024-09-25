@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Article;
+use App\Models\Assistant;
 use App\Http\Requests\StoreArticleRequest;
 use App\Http\Requests\UpdateArticleRequest;
-use App\Models\Article;
 
 class ArticleController extends Controller
 {
@@ -22,11 +23,33 @@ class ArticleController extends Controller
      */
     public function store(StoreArticleRequest $request)
     {
+
+        // Récupérez l'utilisateur connecté
+        $user = auth()->user();
+
+        // Vérifiez si l'utilisateur est un assistant
+        if ($user->hasRole('assistant')) {
+            // Récupérez l'ID de l'assistant
+            $assistant = Assistant::where('user_id', $user->id)->first();
+
+            if (!$assistant) {
+                return response()->json([
+                    "message" => "Assistant non trouvé.",
+                ], 404);
+            }
+
+            $auteurId = $assistant->id; // L'ID de l'assistant
+        } else {
+            return response()->json([
+                "message" => "Vous n'êtes pas autorisé à créer un article.",
+            ], 403);
+        }
+
         $article = new Article();
         $article->titre = $request->titre;
         $article->contenu = $request->contenu;
         $article->date_publication = $request->date_publication;
-        $article->auteur_id = auth()->id();
+        $article->auteur_id = $auteurId;
 
         // Gestion de l'image
         if ($request->hasFile('image')) {
@@ -40,6 +63,7 @@ class ArticleController extends Controller
             "data" => $article
         ], 201);
     }
+
 
     /**
      * Display the specified resource.

@@ -22,8 +22,12 @@ class RendezVousController extends Controller
      */
     public function store(StoreRendezVousRequest $request)
     {
+        // Récupérer l'utilisateur connecté
+        $user = auth()->user();
+
+        // Créer un nouvel objet RendezVous
         $rendezVous = new RendezVous();
-        $rendezVous->created_by = auth()->id();
+        $rendezVous->created_by = $user->id; // ID de l'utilisateur qui crée le rendez-vous
         $rendezVous->date = $request->date;
         $rendezVous->heure_debut = $request->heure_debut;
         $rendezVous->heure_fin = $request->heure_fin;
@@ -32,11 +36,22 @@ class RendezVousController extends Controller
         $rendezVous->status = 'à venir';
         $rendezVous->lieu = $request->lieu;
         $rendezVous->medecin_id = $request->medecin_id;
-        $rendezVous->patient_id = $request->patient_id;
+
+        // Vérifier le rôle de l'utilisateur connecté
+        if ($user->hasRole('assistant')) {
+            $rendezVous->patient_id = $request->patient_id;
+        } elseif ($user->hasRole('patient')) {
+            $rendezVous->patient_id = $user->patient->id;
+        } else {
+            return response()->json([
+                'message' => 'Accès non autorisé.'
+            ], 403);
+        }
+
+        // Enregistrer le rendez-vous
         $rendezVous->save();
 
         return $this->customJsonResponse("Rendez-vous créé avec succès", $rendezVous);
-
     }
 
     /**
@@ -53,12 +68,35 @@ class RendezVousController extends Controller
      */
     public function update(UpdateRendezVousRequest $request, RendezVous $rendezVous)
     {
+
+        // Récupérer l'utilisateur connecté
+        $user = auth()->user();
         $rendezVous->fill($request->all());
 
         if ($request->has('lieu')) {
             $rendezVous->lieu = $request->lieu;
         }
+
+        if ($request->has('medecin_id')) {
+            $rendezVous->medecin_id = $request->medecin_id; // Assurez-vous que ce champ est bien validé dans la requête
+        }
+
+        // Vérifier le rôle de l'utilisateur connecté
+        if ($user->hasRole('assistant')) {
+            // L'assistant peut sélectionner un autre patient
+            $rendezVous->patient_id = $request->patient_id; // ID du patient sélectionné
+        } elseif ($user->hasRole('patient')) {
+            // Le patient utilise son propre ID
+            $rendezVous->patient_id = $user->patient->id; // Assurez-vous que la relation patient est définie dans User
+        } else {
+            return response()->json([
+                'message' => 'Accès non autorisé.'
+            ], 403);
+        }
+
+        // Enregistrer les changements
         $rendezVous->update();
+
         return $this->customJsonResponse("Rendez-vous mis à jour avec succès", $rendezVous);
 
     }

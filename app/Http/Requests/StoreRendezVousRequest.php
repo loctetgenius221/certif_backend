@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Patient;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -26,7 +27,7 @@ class StoreRendezVousRequest extends FormRequest
         return [
             'medecin_id' => [
                 'required',
-                'exists:users,id',
+                'exists:medecins,id',
                 function ($attribute, $value, $fail) {
                     $user = \App\Models\User::find($value);
                     if (!$user || !$user->hasRole('médecin')) {
@@ -36,10 +37,13 @@ class StoreRendezVousRequest extends FormRequest
             ],
             'patient_id' => [
                 'required',
-                'exists:users,id',
+                'exists:users,id', // Vérifie si l'ID existe dans la table `users`
                 function ($attribute, $value, $fail) {
-                    $user = \App\Models\User::find($value);
-                    if (!$user || !$user->hasRole('patient')) {
+                    // Trouver l'utilisateur dans la table `users`
+                    $patient = \App\Models\User::find($value);
+
+                    // Vérifier si cet utilisateur a le rôle `patient`
+                    if (!$patient || !$patient->hasRole('patient')) {
                         $fail('L\'utilisateur sélectionné n\'est pas un patient.');
                     }
                 }

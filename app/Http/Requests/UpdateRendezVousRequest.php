@@ -25,32 +25,32 @@ class UpdateRendezVousRequest extends FormRequest
     {
         return [
             'medecin_id' => [
-                'required',
-                'exists:users,id',
+                'sometimes', // 'required' est remplacé par 'sometimes' pour indiquer que ce champ est optionnel
+                'exists:medecins,id',
                 function ($attribute, $value, $fail) {
                     $user = \App\Models\User::find($value);
-                    if (!$user || !$user->hasRole('médecin')) {
+                    if ($value && (!$user || !$user->hasRole('médecin'))) {
                         $fail('L\'utilisateur sélectionné n\'est pas un médecin.');
                     }
                 }
             ],
             'patient_id' => [
-                'required',
-                'exists:users,id',
+                'sometimes', // Ce champ est optionnel pour la mise à jour
+                'exists:users,id', // Vérifie si l'ID existe dans la table `users`
                 function ($attribute, $value, $fail) {
-                    $user = \App\Models\User::find($value);
-                    if (!$user || !$user->hasRole('patient')) {
+                    $patient = \App\Models\User::find($value);
+                    if ($value && (!$patient || !$patient->hasRole('patient'))) {
                         $fail('L\'utilisateur sélectionné n\'est pas un patient.');
                     }
                 }
             ],
-            'date' => ['required', 'date', 'date_format:Y-m-d'], // Format Y-m-d pour la date
-            'heure_debut' => ['required', 'date_format:H:i'],
-            'heure_fin' => ['required', 'date_format:H:i', 'after:heure_debut'],
-            'type_rendez_vous' => ['required', 'in:présentiel,téléconsultation'],
-            'motif' => ['required', 'in:consultation,suivi'],
-            'status' => ['required', 'in:à venir,en cours,terminé,annulé'],
-            'lieu' => ['nullable', 'string']
+            'date' => ['sometimes', 'date', 'date_format:Y-m-d'], // Optionnel et format Y-m-d
+            'heure_debut' => ['sometimes', 'date_format:H:i'],
+            'heure_fin' => ['sometimes', 'date_format:H:i', 'after:heure_debut'],
+            'type_rendez_vous' => ['sometimes', 'in:présentiel,téléconsultation'],
+            'motif' => ['sometimes', 'in:consultation,suivi'],
+            'status' => ['sometimes', 'in:à venir,en cours,terminé,annulé'],
+            'lieu' => ['nullable', 'string'] // Champ optionnel et peut être null
         ];
     }
 
