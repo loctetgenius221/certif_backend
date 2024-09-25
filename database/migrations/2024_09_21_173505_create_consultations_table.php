@@ -14,19 +14,16 @@ return new class extends Migration
         Schema::create('consultations', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('rendez_vous_id');
-            $table->unsignedBigInteger('medecin_id');
-            $table->unsignedBigInteger('patient_id');
             $table->date('date');
             $table->time('heure_debut');
             $table->time('heure_fin');
             $table->string('type_consultation');
             $table->text('diagnostic')->nullable();
             $table->text('notes_medecin')->nullable();
+            $table->string('url_teleconsultation')->nullable();
             $table->timestamps();
 
             $table->foreign('rendez_vous_id')->references('id')->on('rendez_vous')->onDelete('cascade');
-            $table->foreign('medecin_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('patient_id')->references('id')->on('users')->onDelete('cascade');
 
         });
     }

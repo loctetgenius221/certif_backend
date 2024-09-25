@@ -11,7 +11,7 @@ class StoreDossierMedicauxRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return auth()->user()->hasRole('médecin');
     }
 
     /**
@@ -22,7 +22,13 @@ class StoreDossierMedicauxRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'user_id' => ['required', 'exists:users,id'], // Assure que l'utilisateur existe
+            'date_creation' => ['required', 'date'],
+            'antecedents_medicaux' => ['nullable', 'string'],
+            'traitements' => ['nullable', 'string'],
+            'notes_observations' => ['nullable', 'string'],
+            'intervention_chirurgicale' => ['nullable', 'string'],
+            'info_sup' => ['nullable', 'string'],
         ];
     }
 }

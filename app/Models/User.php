@@ -6,9 +6,9 @@ namespace App\Models;
 use App\Models\Article;
 use App\Models\Service;
 use App\Models\RendezVous;
-use App\Models\InfoMedecin;
-use App\Models\InfoPatient;
-use App\Models\InfoAssistant;
+use App\Models\Medecin;
+use App\Models\Patient;
+use App\Models\Assistant;
 use App\Models\DossierMedicaux;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
@@ -61,22 +61,22 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
-    // Relation 1:1 avec InfoMedecin
-    public function infoMedecin()
+    // Relation 1:1 avec Medecin
+    public function medecin()
     {
-        return $this->hasOne(InfoMedecin::class);
+        return $this->hasOne(Medecin::class);
     }
 
-    // Relation 1:1 avec InfoPatient
-    public function infoPatient()
+    // Relation 1:1 avec Patient
+    public function patient()
     {
-        return $this->hasOne(InfoPatient::class);
+        return $this->hasOne(Patient::class);
     }
 
-    // Relation 1:1 avec InfoAssistant
-    public function infoAssistant()
+    // Relation 1:1 avec Assistant
+    public function assistant()
     {
-        return $this->hasOne(InfoAssistant::class);
+        return $this->hasOne(Assistant::class);
     }
 
     public function service()

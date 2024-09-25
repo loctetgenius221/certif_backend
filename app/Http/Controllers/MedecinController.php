@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreInfoMedecinRequest;
-use App\Http\Requests\UpdateInfoMedecinRequest;
-use App\Models\InfoMedecin;
+use App\Http\Requests\StoreMedecinRequest;
+use App\Http\Requests\UpdateMedecinRequest;
+use App\Models\Medecin;
 
-class InfoMedecinController extends Controller
+class MedecinController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,7 +19,7 @@ class InfoMedecinController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreInfoMedecinRequest $request)
+    public function store(StoreMedecinRequest $request)
     {
         //
     }
@@ -27,7 +27,7 @@ class InfoMedecinController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(InfoMedecin $infoMedecin)
+    public function show(Medecin $Medecin)
     {
         //
     }
@@ -35,7 +35,7 @@ class InfoMedecinController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateInfoMedecinRequest $request, InfoMedecin $infoMedecin)
+    public function update(UpdateMedecinRequest $request, Medecin $Medecin)
     {
         //
     }
@@ -43,7 +43,7 @@ class InfoMedecinController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(InfoMedecin $infoMedecin)
+    public function destroy(Medecin $Medecin)
     {
         //
     }

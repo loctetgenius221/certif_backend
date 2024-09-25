@@ -23,8 +23,6 @@ return new class extends Migration
             $table->string('lieu')->nullable();
             $table->timestamps();
 
-            $table->foreignId('medecin_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('patient_id')->constrained('users')->onDelete('cascade');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
         });
     }

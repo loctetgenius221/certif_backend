@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Models\User;
+use App\Models\Medecin;
+use App\Models\Patient;
 use App\Models\Consultations;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Notification;
@@ -22,13 +24,13 @@ class RendezVous extends Model
     // Relation N:1 avec InfoMedecin
     public function medecin()
     {
-        return $this->belongsTo(User::class, 'medecin_id');
+        return $this->belongsTo(Medecin::class);
     }
 
     // Relation N:1 avec User (patient)
     public function patient()
     {
-        return $this->belongsTo(User::class, 'patient_id');
+        return $this->belongsTo(Patient::class);
     }
 
     // Relation 1:1 avec Consultation

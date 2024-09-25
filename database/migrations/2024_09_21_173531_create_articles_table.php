@@ -17,7 +17,6 @@ return new class extends Migration
             $table->text('contenu');
             $table->dateTime('date_publication');
             $table->string('image')->nullable();
-            $table->foreignId('auteur_id')->constrained('users')->onDelete('cascade');  // Relation avec auteur (user)
             $table->timestamps();
 
         });
