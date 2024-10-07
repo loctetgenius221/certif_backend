@@ -99,7 +99,7 @@ class RolesAndPermissionsSeeder extends Seeder
             ]);
 
             // Médecin
-            $medecinRole = Role::firstOrCreate(['name' => 'médecin']);
+            $medecinRole = Role::firstOrCreate(['name' => 'medecin']);
             $medecinRole->syncPermissions([
                 'planifier rendez-vous', 'modifier rendez-vous', 'voir rendez-vous',
                 'créer dossier médical', 'modifier dossier médical', 'voir dossier médical', 'ajouter document au dossier médical',
@@ -159,7 +159,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
     private function createMedecin($nom, $prenom, $email, $password, $specialite, $numeroLicence, $anneeExperience, $hopital)
     {
-        $medecin = $this->createUserWithRole($nom, $prenom, $email, $password, 'médecin');
+        $medecin = $this->createUserWithRole($nom, $prenom, $email, $password, 'medecin');
         if ($medecin) { // Vérifiez si le médecin a été créé
             Medecin::create([
                 'user_id' => $medecin->id,

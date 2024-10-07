@@ -112,7 +112,7 @@ class AuthController extends Controller
         ]);
 
         // Assignation du rôle "médecin"
-        $user->assignRole('médecin');
+        $user->assignRole('medecin');
 
         return response()->json([
             "status" => true,
@@ -185,8 +185,7 @@ class AuthController extends Controller
 
 
     // Méthode pour la connexion
-    public function login(Request $request)
-    {
+    public function login(Request $request) {
         // Validation des données
         $validator = validator($request->all(), [
             "email" => ["required", "email", "string"],
@@ -210,6 +209,16 @@ class AuthController extends Controller
         // Récupération des informations de l'utilisateur
         $user = auth()->user();
 
+        // Récupérer les informations spécifiques selon le rôle
+        $roleDetails = null;
+        if ($user->hasRole('medecin')) {
+            $roleDetails = $user->medecin; // On suppose que la relation est définie dans le modèle User
+        } elseif ($user->hasRole('patient')) {
+            $roleDetails = $user->patient; // Même ici
+        } elseif ($user->hasRole('assistant')) {
+            $roleDetails = $user->assistant; // Idem
+        }
+
         return response()->json([
             "access_token" => $token,
             "token_type" => "bearer",
@@ -218,11 +227,13 @@ class AuthController extends Controller
                 "nom" => $user->nom,
                 "prenom" => $user->prenom,
                 "email" => $user->email,
-                "role" => $user->getRoleNames()
+                "role" => $user->getRoleNames(),
+                "roleDetails" => $roleDetails, // Ajoutez les détails du rôle ici
             ],
             "expires_in" => env("JWT_TTL") * 60 . " seconds"
         ]);
     }
+
 
     // Méthode pour la déconnexion
     public function logout()

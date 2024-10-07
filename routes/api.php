@@ -5,7 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\RendezVousController;
+use App\Http\Controllers\ConsultationsController;
+use App\Http\Controllers\DossierMedicauxController;
 
 
 
@@ -15,10 +18,10 @@ Route::post('/register/medecin', [AuthController::class, 'registerMedecin']);
 Route::post('/register/assistant', [AuthController::class, 'registerAssistant']);
 // Route pour la connexion
 Route::post("login", [AuthController::class, "login"]);
-Route::middleware("auth")->group(
+Route::middleware("auth:api")->group(
     function () {
         Route::get("profile", [AuthController::class, "profile"]);
-        Route::get("/logout", [AuthController::class, "logout"]);
+        Route::post("/logout", [AuthController::class, "logout"]);
         Route::get("/refresh", [AuthController::class, "refresh"]);
     }
 );
@@ -35,12 +38,12 @@ Route::middleware(['auth:api'])->group(function () {
 });
 
 // Route pour les services
-Route::middleware('auth')->group(function () {
+Route::middleware('auth:api')->group(function () {
     Route::apiResource('services', ServiceController::class);
 });
 
 // Route pour les rendez-vous
-Route::middleware('auth')->group(function () {
+Route::middleware('auth:api')->group(function () {
     // Route::apiResource('rendezvous', RendezVousController::class);
     Route::get('rendezvous', [RendezVousController::class, 'index']);
     Route::post('rendezvous', [RendezVousController::class, 'store']);
@@ -51,3 +54,23 @@ Route::middleware('auth')->group(function () {
     Route::put('/rendezvous/{rendezVous}/status', [RendezVousController::class, 'changeStatus']);
 });
 
+// Route pour les dossier médicales
+Route::middleware('auth:api')->group(function () {
+    // Route::apiResource('dossiers-medicaux', DossierMedicauxController::class)->name('index', 'store');
+    route::get('dossiers-medicaux', [DossierMedicauxController::class, 'index']);
+    route::get('dossiers-medicaux/store', [DossierMedicauxController::class, 'store']);
+    route::get('dossiers-medicaux/{dossierMedicaux}', [DossierMedicauxController::class, 'show']);
+    route::put('dossiers-medicaux/{dossierMedicaux}', [DossierMedicauxController::class, 'update']);
+    route::delete('dossiers-medicaux/{dossierMedicaux}', [DossierMedicauxController::class, 'destroy']);
+
+});
+
+// Route pour les consultations
+Route::middleware('auth:api')->group(function () {
+    Route::apiResource('consultations', ConsultationsController::class);
+});
+
+// Route pour les documents
+Route::middleware('auth:api')->group(function () {
+    Route::apiResource('document', DocumentsController::class);
+});
