@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('dossier_medicaux', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
             $table->date('date_creation');
             $table->text('antecedents_medicaux')->nullable();
             $table->text('traitements')->nullable();
@@ -21,9 +20,6 @@ return new class extends Migration
             $table->text('intervention_chirurgicale')->nullable();
             $table->text('info_sup')->nullable();
             $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-
         });
     }
 

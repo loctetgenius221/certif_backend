@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreInfoAssistantRequest;
-use App\Http\Requests\UpdateInfoAssistantRequest;
-use App\Models\InfoAssistant;
+use App\Http\Requests\StoreAssistantRequest;
+use App\Http\Requests\UpdateAssistantRequest;
+use App\Models\Assistant;
 
-class InfoAssistantController extends Controller
+class AssistantController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,7 +19,7 @@ class InfoAssistantController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreInfoAssistantRequest $request)
+    public function store(StoreAssistantRequest $request)
     {
         //
     }
@@ -27,7 +27,7 @@ class InfoAssistantController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(InfoAssistant $infoAssistant)
+    public function show(Assistant $Assistant)
     {
         //
     }
@@ -35,7 +35,7 @@ class InfoAssistantController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateInfoAssistantRequest $request, InfoAssistant $infoAssistant)
+    public function update(UpdateAssistantRequest $request, Assistant $Assistant)
     {
         //
     }
@@ -43,7 +43,7 @@ class InfoAssistantController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(InfoAssistant $infoAssistant)
+    public function destroy(Assistant $Assistant)
     {
         //
     }

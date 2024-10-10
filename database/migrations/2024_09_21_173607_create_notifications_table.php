@@ -16,6 +16,7 @@ return new class extends Migration
             $table->text('contenu');
             $table->dateTime('date_envoi');
             $table->foreignId('destinataire_id')->constrained('users')->onDelete('cascade');  // Relation avec User (destinataire)
+            $table->foreignId('rendez_vous_id')->constrained('rendez_vous')->onDelete('cascade');  // Relation avec User (destinataire)
             $table->timestamps();
 
         });

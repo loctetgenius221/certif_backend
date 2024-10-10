@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreDossierMedicauxRequest extends FormRequest
 {
@@ -11,7 +13,8 @@ class StoreDossierMedicauxRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // return auth()->user()->hasRole('médecin');
+        return true;
     }
 
     /**
@@ -22,7 +25,20 @@ class StoreDossierMedicauxRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'date' => 'required|date',
+            'antecedents_medicaux' => 'nullable|string',
+            'traitements' => 'nullable|string',
+            'notes_observations' => 'nullable|string',
+            'intervention_chirurgicale' => 'nullable|string',
+            'info_sup' => 'nullable|string',
+            'patient_id' => 'required|exists:patients,id',
         ];
+    }
+
+    public function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json(['success' => false, 'errors' => $validator->errors()], 422)
+        );
     }
 }

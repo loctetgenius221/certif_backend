@@ -22,7 +22,9 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call([
-            RolesAndPermissionsSeeder::class
+            RolesAndPermissionsSeeder::class,
+            RendezVousConsultationSeeder::class,
+            DossierMedicalSeeder::class
         ]);
     }
 }

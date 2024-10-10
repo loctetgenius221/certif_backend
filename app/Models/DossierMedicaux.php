@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\User;
+use App\Models\Patient;
 use App\Models\Documents;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -12,10 +13,12 @@ class DossierMedicaux extends Model
     use HasFactory;
 
     protected $guarded = [];
+    protected $table = 'dossier_medicaux';
 
-    public function user()
+    // Relation avec l'utilisateur (le patient)
+    public function patient()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Patient::class, 'patient_id');
     }
 
     // Relation 1:N avec Document

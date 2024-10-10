@@ -11,14 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('articles', function (Blueprint $table) {
-            $table->id();
-            $table->string('titre');
-            $table->text('contenu');
-            $table->dateTime('date_publication');
-            $table->string('image')->nullable();
-            $table->timestamps();
-
+        Schema::table('dossier_medicaux', function (Blueprint $table) {
+            $table->string('numero_dme')->unique()->after('id');
         });
     }
 
@@ -27,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('articles');
+        Schema::table('dossier_medicaux', function (Blueprint $table) {
+            $table->dropColumn('numero_dme');
+        });
     }
 };
