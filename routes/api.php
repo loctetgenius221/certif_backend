@@ -17,7 +17,7 @@ Route::post('/register/patient', [AuthController::class, 'registerPatient']);
 Route::post('/register/medecin', [AuthController::class, 'registerMedecin']);
 Route::post('/register/assistant', [AuthController::class, 'registerAssistant']);
 // Route pour la connexion
-Route::post("login", [AuthController::class, "login"]);
+Route::post('/login', [AuthController::class, "login"]);
 Route::middleware("auth:api")->group(
     function () {
         Route::get("profile", [AuthController::class, "profile"]);
