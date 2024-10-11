@@ -24,13 +24,13 @@ class RendezVous extends Model
     // Relation N:1 avec InfoMedecin
     public function medecin()
     {
-        return $this->belongsTo(Medecin::class);
+        return $this->belongsTo(Medecin::class, 'medecin_id')->with('user');
     }
 
     // Relation N:1 avec User (patient)
     public function patient()
     {
-        return $this->belongsTo(Patient::class);
+        return $this->belongsTo(Patient::class, 'patient_id')->with('user');
     }
 
     // Relation 1:1 avec Consultation

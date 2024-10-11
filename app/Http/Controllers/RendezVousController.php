@@ -80,7 +80,6 @@ class RendezVousController extends Controller
         if ($request->has('medecin_id')) {
             $rendezVous->medecin_id = $request->medecin_id; // Assurez-vous que ce champ est bien validé dans la requête
         }
-
         // Vérifier le rôle de l'utilisateur connecté
         if ($user->hasRole('assistant')) {
             // L'assistant peut sélectionner un autre patient
@@ -158,4 +157,78 @@ class RendezVousController extends Controller
         return $this->customJsonResponse("Rendez-vous restauré avec succès", $rendezVous);
 
     }
+
+//     //methode pour récupérer les rendez-vous d'un patien
+//     public function getRendezVousByPatient($patientId)
+// {
+//     // Vérifier si l'utilisateur connecté est un patient ou un assistant
+//     $user = auth()->user();
+
+//     if ($user->hasRole('patient') && $user->patient->id != $patientId) {
+//         return response()->json([
+//             'message' => 'Accès non autorisé. Vous ne pouvez voir que vos propres rendez-vous.'
+//         ], 403);
+//     }
+
+//     // Récupérer les rendez-vous pour le patient spécifié
+//     $rendezVous = RendezVous::with(['medecin', 'patient', 'createdBy'])
+//         ->where('patient_id', $patientId)
+//         ->get();
+
+//     return $this->customJsonResponse("Liste des rendez-vous pour le patient", $rendezVous);
+// }
+
+public function getRendezVousByPatient($patientId)
+{
+    $user = auth()->user();
+
+    if ($user->hasRole('patient') && $user->patient->id != $patientId) {
+        return response()->json([
+            'message' => 'Accès non autorisé. Vous ne pouvez voir que vos propres rendez-vous.'
+        ], 403);
+    }
+
+    // Récupérer les rendez-vous avec les relations
+    $rendezVous = RendezVous::with(['medecin.user', 'patient.user', 'createdBy'])
+        ->where('patient_id', $patientId)
+        ->get();
+
+    // Formatter les données pour inclure les informations utilisateur
+    $rendezVousFormatted = $rendezVous->map(function ($item) {
+        return [
+            'id' => $item->id,
+            'date' => $item->date,
+            'heure_debut' => $item->heure_debut,
+            'heure_fin' => $item->heure_fin,
+            'type_rendez_vous' => $item->type_rendez_vous,
+            'motif' => $item->motif,
+            'status' => $item->status,
+            'lieu' => $item->lieu,
+            'medecin' => [
+                'id' => $item->medecin->user->id,
+                'nom' => $item->medecin->user->nom,
+                'prenom' => $item->medecin->user->prenom,
+                'photo' => $item->medecin->user->photo_profil,
+            ],
+            'patient' => [
+                'id' => $item->patient->user->id,
+                'nom' => $item->patient->user->nom,
+                'prenom' => $item->patient->user->prenom,
+                'photo' => $item->patient->user->photo_profil,
+            ],
+            'created_by' => [
+                'id' => $item->createdBy->id,
+                'nom' => $item->createdBy->nom,
+                'prenom' => $item->createdBy->prenom,
+            ],
+        ];
+    });
+
+    return response()->json([
+        'message' => 'Liste des rendez-vous pour le patient',
+        'data' => $rendezVousFormatted
+    ]);
+}
+
+
 }

@@ -26,6 +26,12 @@ Route::middleware("auth:api")->group(
     }
 );
 
+Route::middleware("auth:api")->group(
+    function () {
+        Route::get('/users/{id}', [MedecinController::class, 'show']);
+    }
+);
+
 // Route pour les articles
 // Groupe de routes protégé par le middleware JWT
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index'); // Liste des articles
@@ -52,6 +58,8 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('rendezvous/{rendezVous}', [RendezVousController::class, 'destroy']);
     Route::post('rendezvous/{rendezVous}', [RendezVousController::class, 'restore']);
     Route::put('/rendezvous/{rendezVous}/status', [RendezVousController::class, 'changeStatus']);
+    Route::get('/rendezvous/patient/{patientId}', [RendezVousController::class, 'getRendezVousByPatient']);
+
 });
 
 // Route pour les dossier médicales

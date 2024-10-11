@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Medecin;
 use App\Http\Requests\StoreMedecinRequest;
 use App\Http\Requests\UpdateMedecinRequest;
-use App\Models\Medecin;
 
 class MedecinController extends Controller
 {
@@ -27,9 +28,10 @@ class MedecinController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Medecin $Medecin)
+    public function show($id)
     {
-        //
+        $user = User::find($id);
+        return response()->json($user);
     }
 
     /**

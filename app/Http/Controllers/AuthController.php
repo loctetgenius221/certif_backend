@@ -64,7 +64,7 @@ class AuthController extends Controller
                 "prenom" => $user->prenom,
                 "email" => $user->email,
                 "role" => $user->getRoleNames(),
-                "numero_patient" => $numeroPatient
+                "numero_patient" => $numeroPatient,
             ]
         ]);
     }
