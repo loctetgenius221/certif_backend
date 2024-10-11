@@ -158,25 +158,7 @@ class RendezVousController extends Controller
 
     }
 
-//     //methode pour récupérer les rendez-vous d'un patien
-//     public function getRendezVousByPatient($patientId)
-// {
-//     // Vérifier si l'utilisateur connecté est un patient ou un assistant
-//     $user = auth()->user();
 
-//     if ($user->hasRole('patient') && $user->patient->id != $patientId) {
-//         return response()->json([
-//             'message' => 'Accès non autorisé. Vous ne pouvez voir que vos propres rendez-vous.'
-//         ], 403);
-//     }
-
-//     // Récupérer les rendez-vous pour le patient spécifié
-//     $rendezVous = RendezVous::with(['medecin', 'patient', 'createdBy'])
-//         ->where('patient_id', $patientId)
-//         ->get();
-
-//     return $this->customJsonResponse("Liste des rendez-vous pour le patient", $rendezVous);
-// }
 
 public function getRendezVousByPatient($patientId)
 {

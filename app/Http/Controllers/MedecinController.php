@@ -14,7 +14,8 @@ class MedecinController extends Controller
      */
     public function index()
     {
-        //
+        $medecins = Medecin::with('user')->get();
+        return $this->customJsonResponse("Liste des médecins", $medecins);
     }
 
     /**
@@ -28,10 +29,9 @@ class MedecinController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(Medecin $Medecin)
     {
-        $user = User::find($id);
-        return response()->json($user);
+        //
     }
 
     /**

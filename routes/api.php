@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\MedecinController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\RendezVousController;
@@ -59,6 +60,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('rendezvous/{rendezVous}', [RendezVousController::class, 'restore']);
     Route::put('/rendezvous/{rendezVous}/status', [RendezVousController::class, 'changeStatus']);
     Route::get('/rendezvous/patient/{patientId}', [RendezVousController::class, 'getRendezVousByPatient']);
+    Route::get('/medecins', [MedecinController::class, 'index']);
 
 });
 
