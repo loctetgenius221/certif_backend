@@ -14,7 +14,7 @@ class MedecinController extends Controller
      */
     public function index()
     {
-        $medecins = Medecin::with('user')->get();
+        $medecins = Medecin::with(['user','service'])->get();
         return $this->customJsonResponse("Liste des médecins", $medecins);
     }
 
