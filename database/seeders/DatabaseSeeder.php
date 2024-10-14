@@ -26,7 +26,8 @@ class DatabaseSeeder extends Seeder
             RolesAndPermissionsSeeder::class,
             RendezVousConsultationSeeder::class,
             DossierMedicalSeeder::class,
-            ServicesTableSeeder::class
+            ServicesTableSeeder::class,
+            MedecinsSeeder::class
         ]);
     }
 }
