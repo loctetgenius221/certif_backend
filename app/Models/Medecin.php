@@ -22,4 +22,17 @@ class Medecin extends User
     {
         return $this->belongsTo(Service::class);
     }
+
+    // Relation avec PlagesHoraires
+    public function plagesHoraires()
+    {
+        return $this->hasMany(PlageHoraire::class);
+    }
+
+    // Relation indirecte avec RendezVous à travers PlageHoraire
+    public function rendezVous()
+    {
+        return $this->hasManyThrough(RendezVous::class, PlageHoraire::class, 'medecin_id', 'plage_horaire_id');
+    }
+
 }

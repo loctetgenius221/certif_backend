@@ -8,6 +8,7 @@ use App\Http\Controllers\MedecinController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\RendezVousController;
+use App\Http\Controllers\PlageHoraireController;
 use App\Http\Controllers\ConsultationsController;
 use App\Http\Controllers\DossierMedicauxController;
 
@@ -83,4 +84,13 @@ Route::middleware('auth:api')->group(function () {
 // Route pour les documents
 Route::middleware('auth:api')->group(function () {
     Route::apiResource('document', DocumentsController::class);
+});
+
+Route::middleware('auth:api')->group(function () {
+    Route::apiResource('plages-horaires', PlageHoraireController::class);
+    Route::get('/plagesbymedecin/{id}', [PlageHoraireController::class, 'getPlageByMedecin']);
+});
+
+Route::middleware('auth:api')->group(function () {
+    Route::patch('/plages-horaires/{id}/status', [PlageHoraireController::class, 'updateStatus']);
 });
