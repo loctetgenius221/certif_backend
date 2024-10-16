@@ -31,7 +31,6 @@ class StoreConsultationsRequest extends FormRequest
             "type_consultation" => ["nullable", "string", "max:255"],
             "diagnostic" => ["nullable", "string"],
             "notes_medecin" => ["nullable", "string"],
-            "url_teleconsultation" => ["nullable", "string", "max:255"],
         ];
     }
 

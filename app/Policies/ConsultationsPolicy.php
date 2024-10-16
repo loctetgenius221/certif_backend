@@ -21,7 +21,9 @@ class ConsultationsPolicy
      */
     public function view(User $user, Consultations $consultations): bool
     {
-        //
+        // Autorise seulement le médecin ou le patient associé au rendez-vous de la consultation
+        return $user->id === $consultations->rendezVous->medecin->user_id ||
+               $user->id === $consultations->rendezVous->patient->user_id;
     }
 
     /**
@@ -37,7 +39,8 @@ class ConsultationsPolicy
      */
     public function update(User $user, Consultations $consultations): bool
     {
-        //
+        // Seul le médecin peut mettre à jour la consultation
+        return $user->id === $consultations->rendezVous->medecin->user_id;
     }
 
     /**
@@ -45,7 +48,8 @@ class ConsultationsPolicy
      */
     public function delete(User $user, Consultations $consultations): bool
     {
-        //
+         // Seul le médecin peut supprimer la consultation
+         return $user->id === $consultations->rendezVous->medecin->user_id;
     }
 
     /**

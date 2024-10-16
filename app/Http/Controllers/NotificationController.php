@@ -13,7 +13,8 @@ class NotificationController extends Controller
      */
     public function index()
     {
-        //
+        $notifications = Notification::where('destinataire_id', $userId)->get();
+        return response()->json($notifications);
     }
 
     /**
@@ -21,8 +22,29 @@ class NotificationController extends Controller
      */
     public function store(StoreNotificationRequest $request)
     {
-        //
+        // Logique pour créer un rendez-vous
+        $rendezVous = RendezVous::create([
+            'created_by' => auth()->user()->id,
+            'date' => $request->date,
+            'heure_debut' => $request->heure_debut,
+            'heure_fin' => $request->heure_fin,
+            'type_rendez_vous' => $request->type_rendez_vous,
+            'motif' => $request->motif,
+            'status' => 'à venir',
+            'lieu' => $request->lieu,
+        ]);
+
+        // Générer une notification
+        $notification = Notification::create([
+            'contenu' => 'Un nouveau rendez-vous a été réservé.',
+            'date_envoi' => now(),
+            'destinataire_id' => $request->destinataire_id,  // Médecin ou assistant
+            'rendez_vous_id' => $rendezVous->id,
+        ]);
+
+        return response()->json(['message' => 'Rendez-vous créé et notification envoyée !']);
     }
+
 
     /**
      * Display the specified resource.

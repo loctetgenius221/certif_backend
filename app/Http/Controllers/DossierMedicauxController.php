@@ -21,6 +21,27 @@ class DossierMedicauxController extends Controller
         return $this->customJsonResponse("Liste des dossiers médicaux", $dossiers);
     }
 
+    // Méthode pour recupérer le dossier médical d'un patient spécifique
+    public function getDossierByPatient($patient_id)
+    {
+        $dossier = DossierMedicaux::with('patient')
+            ->where('patient_id', $patient_id)
+            ->with('documents')
+            ->first();
+
+        if ($dossier) {
+            return response()->json([
+                'message' => 'Dossier médical récupéré avec succès',
+                'data' => $dossier
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'Aucun dossier médical trouvé pour ce patient',
+            ], 404);
+        }
+    }
+
+
     /**
      * Store a newly created resource in storage.
      */
@@ -51,7 +72,13 @@ class DossierMedicauxController extends Controller
      */
     public function show(DossierMedicaux $dossierMedicaux)
     {
-        return $this->customJsonResponse("Dossier médical récupéré avec succès", $dossierMedicaux);
+        // Charger les informations du patient ainsi que les documents associés
+        $dossierMedicaux->load('patient', 'documents');
+
+        return response()->json([
+            'message' => 'Dossier médical récupéré avec succès',
+            'data' => $dossierMedicaux
+        ], 200);
     }
 
     /**

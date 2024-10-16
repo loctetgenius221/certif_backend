@@ -61,6 +61,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('rendezvous/{rendezVous}', [RendezVousController::class, 'restore']);
     Route::put('/rendezvous/{rendezVous}/status', [RendezVousController::class, 'changeStatus']);
     Route::get('/rendezvous/patient/{patientId}', [RendezVousController::class, 'getRendezVousByPatient']);
+    Route::get('/rendezvous/medecin/{medecinId}', [RendezVousController::class, 'getRendezVousByMedecin']);
     Route::get('/medecins', [MedecinController::class, 'index']);
 
 });
@@ -73,7 +74,7 @@ Route::middleware('auth:api')->group(function () {
     route::get('dossiers-medicaux/{dossierMedicaux}', [DossierMedicauxController::class, 'show']);
     route::put('dossiers-medicaux/{dossierMedicaux}', [DossierMedicauxController::class, 'update']);
     route::delete('dossiers-medicaux/{dossierMedicaux}', [DossierMedicauxController::class, 'destroy']);
-
+    Route::get('/dossier/patient/{id}', [DossierMedicauxController::class, 'getDossierByPatient']);
 });
 
 // Route pour les consultations

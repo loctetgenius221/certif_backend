@@ -18,12 +18,12 @@ class DossierMedicaux extends Model
     // Relation avec l'utilisateur (le patient)
     public function patient()
     {
-        return $this->belongsTo(Patient::class, 'patient_id');
+        return $this->belongsTo(Patient::class, 'patient_id')->with(['user']);
     }
 
     // Relation 1:N avec Document
     public function documents()
     {
-        return $this->hasMany(Documents::class);
+        return $this->hasMany(Documents::class, 'dossier_medical_id');
     }
 }
