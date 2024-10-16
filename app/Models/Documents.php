@@ -14,6 +14,6 @@ class Documents extends Model
 
     public function dossierMedical()
     {
-        return $this->belongsTo(DossierMedicaux::class);
+        return $this->belongsTo(DossierMedicaux::class, 'dossier_medical_id');
     }
 }

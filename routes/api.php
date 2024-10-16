@@ -8,6 +8,7 @@ use App\Http\Controllers\MedecinController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\RendezVousController;
+use App\Http\Controllers\PlageHoraireController;
 use App\Http\Controllers\ConsultationsController;
 use App\Http\Controllers\DossierMedicauxController;
 
@@ -60,6 +61,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('rendezvous/{rendezVous}', [RendezVousController::class, 'restore']);
     Route::put('/rendezvous/{rendezVous}/status', [RendezVousController::class, 'changeStatus']);
     Route::get('/rendezvous/patient/{patientId}', [RendezVousController::class, 'getRendezVousByPatient']);
+    Route::get('/rendezvous/medecin/{medecinId}', [RendezVousController::class, 'getRendezVousByMedecin']);
     Route::get('/medecins', [MedecinController::class, 'index']);
 
 });
@@ -72,7 +74,7 @@ Route::middleware('auth:api')->group(function () {
     route::get('dossiers-medicaux/{dossierMedicaux}', [DossierMedicauxController::class, 'show']);
     route::put('dossiers-medicaux/{dossierMedicaux}', [DossierMedicauxController::class, 'update']);
     route::delete('dossiers-medicaux/{dossierMedicaux}', [DossierMedicauxController::class, 'destroy']);
-
+    Route::get('/dossier/patient/{id}', [DossierMedicauxController::class, 'getDossierByPatient']);
 });
 
 // Route pour les consultations
@@ -83,4 +85,13 @@ Route::middleware('auth:api')->group(function () {
 // Route pour les documents
 Route::middleware('auth:api')->group(function () {
     Route::apiResource('document', DocumentsController::class);
+});
+
+Route::middleware('auth:api')->group(function () {
+    Route::apiResource('plages-horaires', PlageHoraireController::class);
+    Route::get('/plagesbymedecin/{id}', [PlageHoraireController::class, 'getPlageByMedecin']);
+});
+
+Route::middleware('auth:api')->group(function () {
+    Route::patch('/plages-horaires/{id}/status', [PlageHoraireController::class, 'updateStatus']);
 });

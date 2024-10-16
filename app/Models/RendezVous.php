@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\PlageHoraire;
 
 class RendezVous extends Model
 {
@@ -50,4 +51,9 @@ class RendezVous extends Model
         return $this->hasMany(Notification::class, 'destinataire_id');
     }
 
+    // Relation avec PlageHoraire
+    public function plageHoraire()
+    {
+        return $this->belongsTo(PlageHoraire::class, 'plage_horaire_id');
+    }
 }

@@ -7,6 +7,7 @@ use App\Models\Medecin;
 use App\Models\Patient;
 use App\Models\Assistant;
 use Illuminate\Http\Request;
+use App\Models\DossierMedicaux;
 
 class AuthController extends Controller
 {
@@ -47,7 +48,7 @@ class AuthController extends Controller
         $numeroPatient = 'PAT' . str_pad(($lastPatient ? $lastPatient->id + 1 : 1), 3, '0', STR_PAD_LEFT);
 
         // Création du patient lié à l'utilisateur
-        Patient::create([
+        $patient = Patient::create([
             "numero_patient" => $numeroPatient,
             "user_id" => $user->id,
         ]);
@@ -55,9 +56,24 @@ class AuthController extends Controller
         // Assignation du rôle "patient"
         $user->assignRole('patient');
 
+        // Génération du numéro de DME (Dossier Médical Électronique)
+        $numeroDME = 'DME_' . date('Ymd_His') . '_' . str_pad(DossierMedicaux::count() + 1, 5, '0', STR_PAD_LEFT);
+
+        // Création du dossier médical
+        $dossier = DossierMedicaux::create([
+            'numero_dme' => $numeroDME,
+            'date_creation' => now(),
+            'antecedents_medicaux' => '', // Initialise avec des champs vides ou selon les besoins
+            'traitements' => '',
+            'notes_observations' => '',
+            'intervention_chirurgicale' => '',
+            'info_sup' => '',
+            'patient_id' => $patient->id, // Utilise l'ID du patient fraîchement créé
+        ]);
+
         return response()->json([
             "status" => true,
-            "message" => "Patient inscrit avec succès",
+            "message" => "Patient et dossier médical créés avec succès",
             "data" => [
                 "id" => $user->id,
                 "nom" => $user->nom,
@@ -65,9 +81,11 @@ class AuthController extends Controller
                 "email" => $user->email,
                 "role" => $user->getRoleNames(),
                 "numero_patient" => $numeroPatient,
+                "numero_dme" => $numeroDME // Retourne le numéro du dossier médical
             ]
         ]);
     }
+
 
     // Méthode pour inscrire un médecin
     public function registerMedecin(Request $request) {

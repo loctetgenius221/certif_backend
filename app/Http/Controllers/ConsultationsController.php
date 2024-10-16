@@ -6,15 +6,27 @@ use App\Models\RendezVous;
 use App\Models\Consultations;
 use App\Http\Requests\StoreConsultationsRequest;
 use App\Http\Requests\UpdateConsultationsRequest;
+use App\Services\JitsiTeleconsultationService;
+
 
 class ConsultationsController extends Controller
 {
+
+    protected $jitsiService;
+
+    // Injection du service Jitsi via le constructeur
+    public function __construct(JitsiTeleconsultationService $jitsiService)
+    {
+        $this->jitsiService = $jitsiService;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $consultations = Consultations::all();
+        // Récupérer toutes les consultations avec les relations nécessaires
+        $consultations = Consultations::with('rendezVous.medecin', 'rendezVous.patient')->get();
         return $this->customJsonResponse("Liste des consultations récupérée avec succès", $consultations);
     }
 
@@ -31,6 +43,7 @@ class ConsultationsController extends Controller
             ], 404);
         }
 
+        // Créer la consultation
         $consultation = new Consultations();
         $consultation->rendez_vous_id = $request->rendez_vous_id;
         $consultation->date = $request->date;
@@ -39,8 +52,17 @@ class ConsultationsController extends Controller
         $consultation->type_consultation = $request->type_consultation;
         $consultation->diagnostic = $request->diagnostic;
         $consultation->notes_medecin = $request->notes_medecin;
-        $consultation->url_teleconsultation = $request->url_teleconsultation;
 
+        // Si la consultation est "en ligne", générer une URL pour la salle de téléconsultation
+        if ($request->type_consultation === 'en ligne') {
+            // Générer un nom de salle unique
+            $roomName = 'consultation-' . $rendezVous->id . '-' . now()->timestamp;
+
+            // Utiliser le service Jitsi pour créer l'URL de la salle
+            $consultation->url_teleconsultation = $this->jitsiService->createJitsiRoom($roomName);
+        }
+
+        // Sauvegarder la consultation
         $consultation->save();
 
         return response()->json([
@@ -54,6 +76,8 @@ class ConsultationsController extends Controller
      */
     public function show(Consultations $consultation)
     {
+        // Charger les relations du rendez-vous, médecin, et patient
+        $consultation->load('rendezVous.medecin.user', 'rendezVous.patient.user');
         return $this->customJsonResponse("Consultation récupérée avec succès", $consultation);
     }
 
@@ -62,6 +86,7 @@ class ConsultationsController extends Controller
      */
     public function update(UpdateConsultationsRequest $request, Consultations $consultation)
     {
+        // Mettre à jour les informations de la consultation
         $consultation->fill($request->validated());
         $consultation->save();
 
@@ -76,6 +101,7 @@ class ConsultationsController extends Controller
      */
     public function destroy(Consultations $consultation)
     {
+        // Supprimer la consultation
         $consultation->delete();
         return $this->customJsonResponse("Consultation supprimée avec succès.", null, 200);
     }
