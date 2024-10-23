@@ -11,9 +11,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class DossierMedicaux extends Model
 {
     use HasFactory;
+    protected $table = 'dossier_medicaux';
 
     protected $guarded = [];
-    protected $table = 'dossier_medicaux';
 
     // Relation avec l'utilisateur (le patient)
     public function patient()

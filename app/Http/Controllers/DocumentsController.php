@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Log;
 use App\Models\Documents;
 use App\Models\DossierMedicaux;
 use App\Http\Requests\StoreDocumentsRequest;
@@ -23,6 +24,7 @@ class DocumentsController extends Controller
      */
     public function store(StoreDocumentsRequest $request)
     {
+        Log::info($request->all());
         // Récupérez l'utilisateur connecté
         $user = auth()->user();
 

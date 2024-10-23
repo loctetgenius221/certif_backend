@@ -24,7 +24,7 @@ class StoreDocumentsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "dossier_medical_id" => ["required", "exists:dossier_medicals,id"],
+            "dossier_medical_id" => ["required", "exists:dossier_medicaux,id"],
             "type_document" => ["required", "string", "max:255"],
             "file" => ["required", "file", "mimes:pdf,jpeg,png,jpg", "max:2048"],
         ];

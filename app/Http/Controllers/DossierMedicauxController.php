@@ -30,6 +30,13 @@ class DossierMedicauxController extends Controller
             ->first();
 
         if ($dossier) {
+            // Décoder les champs JSON
+            $dossier->antecedents_medicaux = json_decode($dossier->antecedents_medicaux);
+            $dossier->traitements = json_decode($dossier->traitements);
+            $dossier->notes_observations = json_decode($dossier->notes_observations);
+            $dossier->intervention_chirurgicale = json_decode($dossier->intervention_chirurgicale);
+            $dossier->info_sup = json_decode($dossier->info_sup);
+
             return response()->json([
                 'message' => 'Dossier médical récupéré avec succès',
                 'data' => $dossier
@@ -47,17 +54,16 @@ class DossierMedicauxController extends Controller
      */
     public function store(StoreDossierMedicauxRequest $request)
     {
-        $numeroDME = 'DME_' . date('Ymd_His') . '_' . str_pad(DossierMedical::count() + 1, 5, '0', STR_PAD_LEFT);
+        $numeroDME = 'DME_' . date('Ymd_His') . '_' . str_pad(DossierMedicaux::count() + 1, 5, '0', STR_PAD_LEFT);
 
         $dossier = DossierMedicaux::create([
             'numero_dme' => $numeroDME,
             'date_creation' => now(),
-            'date' => $request->date,
-            'antecedents_medicaux' => $request->antecedents_medicaux,
-            'traitements' => $request->traitements,
-            'notes_observations' => $request->notes_observations,
-            'intervention_chirurgicale' => $request->intervention_chirurgicale,
-            'info_sup' => $request->info_sup,
+            'antecedents_medicaux' => json_encode($request->antecedents_medicaux),  // Encoder en JSON
+            'traitements' => json_encode($request->traitements),  // Encoder en JSON
+            'notes_observations' => json_encode($request->notes_observations),  // Encoder en JSON
+            'intervention_chirurgicale' => json_encode($request->intervention_chirurgicale),  // Encoder en JSON
+            'info_sup' => json_encode($request->info_sup),  // Encoder en JSON
             'patient_id' => $request->patient_id,
         ]);
 
@@ -75,6 +81,13 @@ class DossierMedicauxController extends Controller
         // Charger les informations du patient ainsi que les documents associés
         $dossierMedicaux->load('patient', 'documents');
 
+        // Décoder les champs JSON
+        $dossierMedicaux->antecedents_medicaux = json_decode($dossierMedicaux->antecedents_medicaux);
+        $dossierMedicaux->traitements = json_decode($dossierMedicaux->traitements);
+        $dossierMedicaux->notes_observations = json_decode($dossierMedicaux->notes_observations);
+        $dossierMedicaux->intervention_chirurgicale = json_decode($dossierMedicaux->intervention_chirurgicale);
+        $dossierMedicaux->info_sup = json_decode($dossierMedicaux->info_sup);
+
         return response()->json([
             'message' => 'Dossier médical récupéré avec succès',
             'data' => $dossierMedicaux
@@ -86,7 +99,13 @@ class DossierMedicauxController extends Controller
      */
     public function update(UpdateDossierMedicauxRequest $request, DossierMedicaux $dossierMedicaux)
     {
-        $dossierMedicaux->update($request->validated());
+        $dossierMedicaux->update([
+            'antecedents_medicaux' => json_encode($request->antecedents_medicaux),  // Encoder en JSON
+            'traitements' => json_encode($request->traitements),  // Encoder en JSON
+            'notes_observations' => json_encode($request->notes_observations),  // Encoder en JSON
+            'intervention_chirurgicale' => json_encode($request->intervention_chirurgicale),  // Encoder en JSON
+            'info_sup' => json_encode($request->info_sup),  // Encoder en JSON
+        ]);
 
         return response()->json([
             "message" => "Dossier médical mis à jour avec succès",
