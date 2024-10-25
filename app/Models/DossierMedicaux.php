@@ -11,6 +11,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class DossierMedicaux extends Model
 {
     use HasFactory;
+
+    protected $casts = [
+        'antecedents_medicaux' => 'array',
+        'traitements' => 'array',
+        'notes_observations' => 'array',
+        'intervention_chirurgicale' => 'array',
+        'info_sup' => 'array',
+    ];
+
     protected $table = 'dossier_medicaux';
 
     protected $guarded = [];

@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\DossierMedicaux;
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Support\Facades\DB;
 
 class DossierMedicauxJsonSeeder extends Seeder
 {
@@ -20,11 +20,11 @@ class DossierMedicauxJsonSeeder extends Seeder
         DossierMedicaux::create([
             'numero_dme' => $numeroDME1,
             'date_creation' => now(),
-            'antecedents_medicaux' => json_encode([
+            'antecedents_medicaux' => [
                 "Diabète",
                 "Hypertension"
-            ]),
-            'traitements' => json_encode([
+            ],
+            'traitements' => [
                 [
                     "id" => 1,
                     "nom" => "Amoxicilline",
@@ -41,16 +41,16 @@ class DossierMedicauxJsonSeeder extends Seeder
                     "date_fin" => "2024-02-07",
                     "prescripteur" => "Dr Durant"
                 ]
-            ]),
-            'notes_observations' => json_encode([
+            ],
+            'notes_observations' => [
                 "Patient montre des signes de guérison rapide."
-            ]),
-            'intervention_chirurgicale' => json_encode([
+            ],
+            'intervention_chirurgicale' => [
                 "Appendicectomie - 2022"
-            ]),
-            'info_sup' => json_encode([
+            ],
+            'info_sup' => [
                 "Allergie au latex"
-            ]),
+            ],
             'patient_id' => 1,
         ]);
 
@@ -61,11 +61,11 @@ class DossierMedicauxJsonSeeder extends Seeder
         DossierMedicaux::create([
             'numero_dme' => $numeroDME2,
             'date_creation' => now(),
-            'antecedents_medicaux' => json_encode([
+            'antecedents_medicaux' => [
                 "Asthme",
                 "Problèmes cardiaques"
-            ]),
-            'traitements' => json_encode([
+            ],
+            'traitements' => [
                 [
                     "id" => 1,
                     "nom" => "Salbutamol",
@@ -82,16 +82,16 @@ class DossierMedicauxJsonSeeder extends Seeder
                     "date_fin" => "2024-03-12",
                     "prescripteur" => "Dr Diop"
                 ]
-            ]),
-            'notes_observations' => json_encode([
+            ],
+            'notes_observations' => [
                 "Le patient a des difficultés respiratoires."
-            ]),
-            'intervention_chirurgicale' => json_encode([
+            ],
+            'intervention_chirurgicale' => [
                 "Pontage coronarien - 2021"
-            ]),
-            'info_sup' => json_encode([
+            ],
+            'info_sup' => [
                 "Fumeur depuis 10 ans"
-            ]),
+            ],
             'patient_id' => 2,
         ]);
     }
