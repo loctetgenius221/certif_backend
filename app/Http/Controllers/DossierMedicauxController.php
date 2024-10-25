@@ -24,18 +24,18 @@ class DossierMedicauxController extends Controller
     // Méthode pour recupérer le dossier médical d'un patient spécifique
     public function getDossierByPatient($patient_id)
     {
-        $dossier = DossierMedicaux::with('patient')
-            ->where('patient_id', $patient_id)
-            ->with('documents')
-            ->first();
+        // Récupérer le dossier médical du patient, incluant le patient et les documents associés
+        $dossier = DossierMedicaux::with('patient', 'documents')
+                    ->where('patient_id', $patient_id)
+                    ->first();
 
         if ($dossier) {
-            // Décoder les champs JSON
-            $dossier->antecedents_medicaux = json_decode($dossier->antecedents_medicaux);
-            $dossier->traitements = json_decode($dossier->traitements);
-            $dossier->notes_observations = json_decode($dossier->notes_observations);
-            $dossier->intervention_chirurgicale = json_decode($dossier->intervention_chirurgicale);
-            $dossier->info_sup = json_decode($dossier->info_sup);
+            // Décoder les champs JSON uniquement si ce sont des chaînes
+            $dossier->antecedents_medicaux = is_string($dossier->antecedents_medicaux) ? json_decode($dossier->antecedents_medicaux) : $dossier->antecedents_medicaux;
+            $dossier->traitements = is_string($dossier->traitements) ? json_decode($dossier->traitements) : $dossier->traitements;
+            $dossier->notes_observations = is_string($dossier->notes_observations) ? json_decode($dossier->notes_observations) : $dossier->notes_observations;
+            $dossier->intervention_chirurgicale = is_string($dossier->intervention_chirurgicale) ? json_decode($dossier->intervention_chirurgicale) : $dossier->intervention_chirurgicale;
+            $dossier->info_sup = is_string($dossier->info_sup) ? json_decode($dossier->info_sup) : $dossier->info_sup;
 
             return response()->json([
                 'message' => 'Dossier médical récupéré avec succès',
@@ -47,6 +47,7 @@ class DossierMedicauxController extends Controller
             ], 404);
         }
     }
+
 
 
     /**
@@ -77,22 +78,22 @@ class DossierMedicauxController extends Controller
      * Display the specified resource.
      */
     public function show(DossierMedicaux $dossierMedicaux)
-{
-    // Charger les informations du patient ainsi que les documents associés
-    $dossierMedicaux->load('patient', 'documents');
+    {
+        // Charger les informations du patient ainsi que les documents associés
+        $dossierMedicaux->load('patient', 'documents');
 
-    // Décoder les champs JSON uniquement si ce sont des chaînes
-    $dossierMedicaux->antecedents_medicaux = is_string($dossierMedicaux->antecedents_medicaux) ? json_decode($dossierMedicaux->antecedents_medicaux) : $dossierMedicaux->antecedents_medicaux;
-    $dossierMedicaux->traitements = is_string($dossierMedicaux->traitements) ? json_decode($dossierMedicaux->traitements) : $dossierMedicaux->traitements;
-    $dossierMedicaux->notes_observations = is_string($dossierMedicaux->notes_observations) ? json_decode($dossierMedicaux->notes_observations) : $dossierMedicaux->notes_observations;
-    $dossierMedicaux->intervention_chirurgicale = is_string($dossierMedicaux->intervention_chirurgicale) ? json_decode($dossierMedicaux->intervention_chirurgicale) : $dossierMedicaux->intervention_chirurgicale;
-    $dossierMedicaux->info_sup = is_string($dossierMedicaux->info_sup) ? json_decode($dossierMedicaux->info_sup) : $dossierMedicaux->info_sup;
+        // Décoder les champs JSON uniquement si ce sont des chaînes
+        $dossierMedicaux->antecedents_medicaux = is_string($dossierMedicaux->antecedents_medicaux) ? json_decode($dossierMedicaux->antecedents_medicaux) : $dossierMedicaux->antecedents_medicaux;
+        $dossierMedicaux->traitements = is_string($dossierMedicaux->traitements) ? json_decode($dossierMedicaux->traitements) : $dossierMedicaux->traitements;
+        $dossierMedicaux->notes_observations = is_string($dossierMedicaux->notes_observations) ? json_decode($dossierMedicaux->notes_observations) : $dossierMedicaux->notes_observations;
+        $dossierMedicaux->intervention_chirurgicale = is_string($dossierMedicaux->intervention_chirurgicale) ? json_decode($dossierMedicaux->intervention_chirurgicale) : $dossierMedicaux->intervention_chirurgicale;
+        $dossierMedicaux->info_sup = is_string($dossierMedicaux->info_sup) ? json_decode($dossierMedicaux->info_sup) : $dossierMedicaux->info_sup;
 
-    return response()->json([
-        'message' => 'Dossier médical récupéré avec succès',
-        'data' => $dossierMedicaux
-    ], 200);
-}
+        return response()->json([
+            'message' => 'Dossier médical récupéré avec succès',
+            'data' => $dossierMedicaux
+        ], 200);
+    }
 
 
     /**
