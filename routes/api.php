@@ -88,10 +88,15 @@ Route::middleware('auth:api')->group(function () {
 });
 
 Route::middleware('auth:api')->group(function () {
-    Route::apiResource('plages-horaires', PlageHoraireController::class);
+    // Route::apiResource('plages-horaires', PlageHoraireController::class);
     Route::get('/plagesbymedecin/{id}', [PlageHoraireController::class, 'getPlageByMedecin']);
-});
 
-Route::middleware('auth:api')->group(function () {
+    Route::get('plageshoraires', [PlageHoraireController::class, 'index']);
+    Route::post('plageshoraires', [PlageHoraireController::class, 'store']);
+    Route::get('plageshoraires/{plageHoraire}', [PlageHoraireController::class, 'show']);
+    Route::put('plageshoraires/{plageHoraire}', [PlageHoraireController::class, 'update']);
+    Route::delete('plageshoraires/{plageHoraire}', [PlageHoraireController::class, 'destroy']);
+
+
     Route::patch('/plages-horaires/{id}/status', [PlageHoraireController::class, 'updateStatus']);
 });

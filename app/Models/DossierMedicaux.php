@@ -12,8 +12,17 @@ class DossierMedicaux extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $casts = [
+        'antecedents_medicaux' => 'array',
+        'traitements' => 'array',
+        'notes_observations' => 'array',
+        'intervention_chirurgicale' => 'array',
+        'info_sup' => 'array',
+    ];
+
     protected $table = 'dossier_medicaux';
+
+    protected $guarded = [];
 
     // Relation avec l'utilisateur (le patient)
     public function patient()

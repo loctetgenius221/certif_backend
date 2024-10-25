@@ -71,10 +71,27 @@ class PlageHoraireController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Création de la plage horaire
+        // Vérification de l'existence d'une plage horaire similaire
+        $plageExistante = PlageHoraire::where('medecin_id', $request->medecin_id)
+            ->where('date', $request->date)
+            ->where('heure_debut', $request->heure_debut)
+            ->where('heure_fin', $request->heure_fin)
+            ->exists();
+
+        if ($plageExistante) {
+            return response()->json([
+                'message' => 'Une plage horaire existe déjà pour ce médecin à cette date et à ces heures.'
+            ], 409); // 409 Conflict
+        }
+
+        // Création de la plage horaire si elle n'existe pas encore
         $plageHoraire = PlageHoraire::create($request->all());
-        return response()->json($plageHoraire, 201);
+
+        // return response()->json($plageHoraire, 201);
+        return $this->customJsonResponse("Plage horaire créée avec succès", $plageHoraire);
+
     }
+
 
     /**
      * Display the specified resource.
@@ -115,8 +132,13 @@ class PlageHoraireController extends Controller
      */
     public function destroy(PlageHoraire $plageHoraire)
     {
-        // Suppression de la plage horaire
-        $plageHoraire->delete();
-        return response()->json(['message' => 'Plage horaire supprimée avec succès']);
+        // try {
+            // Suppression de la plage horaire
+            $plageHoraire->delete();
+            return response()->json(['message' => 'Plage horaire supprimée avec succès']);
+        // } catch (\Exception $e) {
+        //     // Gestion des erreurs
+        //     return response()->json(['message' => 'Erreur lors de la suppression de la plage horaire', 'error' => $e->getMessage()], 500);
+        // }
     }
 }
