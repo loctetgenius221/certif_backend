@@ -80,6 +80,7 @@ Route::middleware('auth:api')->group(function () {
 // Route pour les consultations
 Route::middleware('auth:api')->group(function () {
     Route::apiResource('consultations', ConsultationsController::class);
+    Route::get('consultations/patient/{patient_id}', [ConsultationsController::class, 'getConsultationByPatient']);
 });
 
 // Route pour les documents

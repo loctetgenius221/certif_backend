@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use App\Models\RendezVous;
 use App\Models\Consultations;
 use App\Http\Requests\StoreConsultationsRequest;
@@ -28,6 +29,60 @@ class ConsultationsController extends Controller
         // Récupérer toutes les consultations avec les relations nécessaires
         $consultations = Consultations::with('rendezVous.medecin', 'rendezVous.patient')->get();
         return $this->customJsonResponse("Liste des consultations récupérée avec succès", $consultations);
+    }
+
+     /**
+     * Récupérer toutes les consultations d'un patient spécifique
+     *
+     * @param int $patient_id
+     * @return JsonResponse
+     */
+    public function getConsultationByPatient(int $patient_id): JsonResponse
+    {
+        try {
+            $consultations = Consultations::query()
+                ->whereHas('rendezVous', function($query) use ($patient_id) {
+                    $query->where('patient_id', $patient_id);
+                })
+                ->with([
+                    'rendezVous',
+                    'medecin.user' => function($query) {
+                        $query->select('id', 'nom', 'prenom', 'email');
+                    },
+                    'patient.user' => function($query) {
+                        $query->select('id', 'nom', 'prenom', 'email');
+                    }
+                ])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            if ($consultations->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Aucune consultation trouvée pour ce patient',
+                    'data' => []
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Liste des consultations du patient récupérée avec succès',
+                'data' => $consultations
+            ], 200);
+
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors de la récupération des consultations: ' . $e->getMessage(), [
+                'patient_id' => $patient_id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Une erreur est survenue lors de la récupération des consultations',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

@@ -16,18 +16,36 @@ class Consultations extends Model
 
     public function rendezVous()
     {
-        return $this->belongsTo(RendezVous::class);
+        return $this->belongsTo(RendezVous::class, 'rendez_vous_id');
     }
 
-    // Relation avec le médecin via RendezVous
+      /**
+     * Relation avec le médecin via RendezVous
+     */
     public function medecin()
     {
-        return $this->rendezVous->medecin();
+        return $this->hasOneThrough(
+            Medecin::class,
+            RendezVous::class,
+            'id', // Clé étrangère sur rendez_vous
+            'id', // Clé primaire sur medecin
+            'rendez_vous_id', // Clé étrangère sur consultations
+            'medecin_id' // Clé étrangère sur rendez_vous
+        );
     }
 
-    // Relation avec le patient via RendezVous
+    /**
+     * Relation avec le patient via RendezVous
+     */
     public function patient()
     {
-        return $this->rendezVous->patient();
+        return $this->hasOneThrough(
+            Patient::class,
+            RendezVous::class,
+            'id', // Clé étrangère sur rendez_vous
+            'id', // Clé primaire sur patient
+            'rendez_vous_id', // Clé étrangère sur consultations
+            'patient_id' // Clé étrangère sur rendez_vous
+        );
     }
 }
