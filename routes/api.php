@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\MedecinController;
 use App\Http\Controllers\ServiceController;
@@ -100,4 +101,9 @@ Route::middleware('auth:api')->group(function () {
 
 
     Route::patch('/plages-horaires/{id}/status', [PlageHoraireController::class, 'updateStatus']);
+});
+
+// Route pour la gestion des utilisateurs
+Route::middleware('auth:api')->group(function () {
+    Route::get('/utilisateur/stats', [UserController::class, 'getUserStatistics']);
 });
