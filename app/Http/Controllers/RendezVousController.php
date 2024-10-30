@@ -160,112 +160,112 @@ class RendezVousController extends Controller
 
 
 
-public function getRendezVousByPatient($patientId)
-{
-    $user = auth()->user();
+    public function getRendezVousByPatient($patientId)
+    {
+        $user = auth()->user();
 
-    if ($user->hasRole('patient') && $user->patient->id != $patientId) {
+        if ($user->hasRole('patient') && $user->patient->id != $patientId) {
+            return response()->json([
+                'message' => 'Accès non autorisé. Vous ne pouvez voir que vos propres rendez-vous.'
+            ], 403);
+        }
+
+        // Récupérer les rendez-vous avec les relations
+        $rendezVous = RendezVous::with(['medecin.user', 'patient.user', 'createdBy'])
+            ->where('patient_id', $patientId)
+            ->get();
+
+        // Formatter les données pour inclure les informations utilisateur
+        $rendezVousFormatted = $rendezVous->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'date' => $item->date,
+                'heure_debut' => $item->heure_debut,
+                'heure_fin' => $item->heure_fin,
+                'type_rendez_vous' => $item->type_rendez_vous,
+                'motif' => $item->motif,
+                'status' => $item->status,
+                'lieu' => $item->lieu,
+                'medecin' => [
+                    'id' => $item->medecin->user->id,
+                    'nom' => $item->medecin->user->nom,
+                    'prenom' => $item->medecin->user->prenom,
+                    'photo' => $item->medecin->user->photo_profil,
+                ],
+                'patient' => [
+                    'id' => $item->patient->user->id,
+                    'nom' => $item->patient->user->nom,
+                    'prenom' => $item->patient->user->prenom,
+                    'photo' => $item->patient->user->photo_profil,
+                ],
+                'created_by' => [
+                    'id' => $item->createdBy->id,
+                    'nom' => $item->createdBy->nom,
+                    'prenom' => $item->createdBy->prenom,
+                ],
+            ];
+        });
+
         return response()->json([
-            'message' => 'Accès non autorisé. Vous ne pouvez voir que vos propres rendez-vous.'
-        ], 403);
+            'message' => 'Liste des rendez-vous pour le patient',
+            'data' => $rendezVousFormatted
+        ]);
     }
 
-    // Récupérer les rendez-vous avec les relations
-    $rendezVous = RendezVous::with(['medecin.user', 'patient.user', 'createdBy'])
-        ->where('patient_id', $patientId)
-        ->get();
 
-    // Formatter les données pour inclure les informations utilisateur
-    $rendezVousFormatted = $rendezVous->map(function ($item) {
-        return [
-            'id' => $item->id,
-            'date' => $item->date,
-            'heure_debut' => $item->heure_debut,
-            'heure_fin' => $item->heure_fin,
-            'type_rendez_vous' => $item->type_rendez_vous,
-            'motif' => $item->motif,
-            'status' => $item->status,
-            'lieu' => $item->lieu,
-            'medecin' => [
-                'id' => $item->medecin->user->id,
-                'nom' => $item->medecin->user->nom,
-                'prenom' => $item->medecin->user->prenom,
-                'photo' => $item->medecin->user->photo_profil,
-            ],
-            'patient' => [
-                'id' => $item->patient->user->id,
-                'nom' => $item->patient->user->nom,
-                'prenom' => $item->patient->user->prenom,
-                'photo' => $item->patient->user->photo_profil,
-            ],
-            'created_by' => [
-                'id' => $item->createdBy->id,
-                'nom' => $item->createdBy->nom,
-                'prenom' => $item->createdBy->prenom,
-            ],
-        ];
-    });
+    // Recupérer les rendez-vous d'un medecin
+    public function getRendezVousByMedecin($medecinId)
+    {
+        $user = auth()->user();
 
-    return response()->json([
-        'message' => 'Liste des rendez-vous pour le patient',
-        'data' => $rendezVousFormatted
-    ]);
-}
+        // Vérifier si l'utilisateur a le rôle de médecin et s'il correspond au médecin demandé
+        if ($user->hasRole('medecin') && $user->medecin->id != $medecinId) {
+            return response()->json([
+                'message' => 'Accès non autorisé. Vous ne pouvez voir que vos propres rendez-vous.'
+            ], 403);
+        }
 
+        // Récupérer les rendez-vous du médecin avec les relations
+        $rendezVous = RendezVous::with(['medecin.user', 'patient.user', 'createdBy'])
+            ->where('medecin_id', $medecinId)
+            ->get();
 
-// Recupérer les rendez-vous d'un medecin
-public function getRendezVousByMedecin($medecinId)
-{
-    $user = auth()->user();
+        // Formatter les données pour inclure les informations utilisateur
+        $rendezVousFormatted = $rendezVous->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'date' => $item->date,
+                'heure_debut' => $item->heure_debut,
+                'heure_fin' => $item->heure_fin,
+                'type_rendez_vous' => $item->type_rendez_vous,
+                'motif' => $item->motif,
+                'status' => $item->status,
+                'lieu' => $item->lieu,
+                'medecin' => [
+                    'id' => $item->medecin->user->id,
+                    'nom' => $item->medecin->user->nom,
+                    'prenom' => $item->medecin->user->prenom,
+                    'photo' => $item->medecin->user->photo_profil,
+                ],
+                'patient' => [
+                    'id' => $item->patient->user->id,
+                    'nom' => $item->patient->user->nom,
+                    'prenom' => $item->patient->user->prenom,
+                    'photo' => $item->patient->user->photo_profil,
+                ],
+                'created_by' => [
+                    'id' => $item->createdBy->id,
+                    'nom' => $item->createdBy->nom,
+                    'prenom' => $item->createdBy->prenom,
+                ],
+            ];
+        });
 
-    // Vérifier si l'utilisateur a le rôle de médecin et s'il correspond au médecin demandé
-    if ($user->hasRole('medecin') && $user->medecin->id != $medecinId) {
         return response()->json([
-            'message' => 'Accès non autorisé. Vous ne pouvez voir que vos propres rendez-vous.'
-        ], 403);
+            'message' => 'Liste des rendez-vous pour le médecin',
+            'data' => $rendezVousFormatted
+        ]);
     }
-
-    // Récupérer les rendez-vous du médecin avec les relations
-    $rendezVous = RendezVous::with(['medecin.user', 'patient.user', 'createdBy'])
-        ->where('medecin_id', $medecinId)
-        ->get();
-
-    // Formatter les données pour inclure les informations utilisateur
-    $rendezVousFormatted = $rendezVous->map(function ($item) {
-        return [
-            'id' => $item->id,
-            'date' => $item->date,
-            'heure_debut' => $item->heure_debut,
-            'heure_fin' => $item->heure_fin,
-            'type_rendez_vous' => $item->type_rendez_vous,
-            'motif' => $item->motif,
-            'status' => $item->status,
-            'lieu' => $item->lieu,
-            'medecin' => [
-                'id' => $item->medecin->user->id,
-                'nom' => $item->medecin->user->nom,
-                'prenom' => $item->medecin->user->prenom,
-                'photo' => $item->medecin->user->photo_profil,
-            ],
-            'patient' => [
-                'id' => $item->patient->user->id,
-                'nom' => $item->patient->user->nom,
-                'prenom' => $item->patient->user->prenom,
-                'photo' => $item->patient->user->photo_profil,
-            ],
-            'created_by' => [
-                'id' => $item->createdBy->id,
-                'nom' => $item->createdBy->nom,
-                'prenom' => $item->createdBy->prenom,
-            ],
-        ];
-    });
-
-    return response()->json([
-        'message' => 'Liste des rendez-vous pour le médecin',
-        'data' => $rendezVousFormatted
-    ]);
-}
 
 
 
