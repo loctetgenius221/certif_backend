@@ -32,7 +32,7 @@ class ArticleSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
                 'auteur_id' => 1,
-                'categorie_id' => 1, // Médecine Générale
+                'categorie_id' => 3, // Médecine Générale
             ],
             [
                 'titre' => 'Prévention des maladies cardiovasculaires',

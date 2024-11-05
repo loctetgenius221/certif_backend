@@ -10,4 +10,10 @@ class Comment extends Model
     use HasFactory;
     protected $guarded = [];
 
+     // Relation : un commentaire appartient à un article
+     public function article()
+     {
+         return $this->belongsTo(Article::class);
+     }
+
 }

@@ -32,8 +32,8 @@ class DatabaseSeeder extends Seeder
             DossierMedicalSeeder::class,
             ServicesTableSeeder::class,
             MedecinsSeeder::class,
-            CategoriesTableSeeder::class,
-            ArticlesTableSeeder::class,
+            CategoriesSeeder::class,
+            ArticleSeeder::class,
         ]);
     }
 }
