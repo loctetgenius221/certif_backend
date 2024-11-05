@@ -4,9 +4,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\MedecinController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\RendezVousController;
 use App\Http\Controllers\PlageHoraireController;
@@ -44,6 +47,10 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store'); // Création d'un article
     Route::put('/articles/{article}', [ArticleController::class, 'update'])->name('articles.update'); // Mise à jour d'un article
     Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy'); // Suppression d'un article
+    Route::resource('categories', CategoryController::class);
+    Route::resource('comments', CommentController::class);
+    Route::resource('media', MediaController::class);
+    Route::get('/nombrearticle', [CategoryController::class, 'getCategoriesWithArticleCount']);
 });
 
 // Route pour les services
@@ -106,4 +113,16 @@ Route::middleware('auth:api')->group(function () {
 // Route pour la gestion des utilisateurs
 Route::middleware('auth:api')->group(function () {
     Route::get('/utilisateur/stats', [UserController::class, 'getUserStatistics']);
+    Route::post('/utilisateur/{id}/block', [UserController::class, 'blockUser']);
+    Route::post('/utilisateur/{id}/unblock', [UserController::class, 'unblockUser']);
+    // Gestion des roles
+    Route::get('/roles', [UserController::class, 'getRole']);
+    Route::post('/roles', [UserController::class, 'storeRole']); // Ajouter un rôle
+    Route::put('/roles/{role}', [UserController::class, 'updateRole']); // Modifier un rôle
+    Route::delete('/roles/{role}', [UserController::class, 'destroyRole']);
+});
+
+// Route pour la gestion des roles et permissions
+Route::middleware('auth:api')->group(function () {
+    Route::get('/roles-permissions', [UserController::class, 'getRolePermissions']);
 });

@@ -13,7 +13,7 @@ class RendezVousController extends Controller
      */
     public function index()
     {
-        $rendezVous = RendezVous::with(['medecin', 'patient', 'createdBy'])->get();
+        $rendezVous = RendezVous::with(['medecin.service', 'patient', 'createdBy'])->get();
         return $this->customJsonResponse("Liste des rendez-vous", $rendezVous);
     }
 

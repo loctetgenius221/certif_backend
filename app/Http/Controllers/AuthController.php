@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Medecin;
 use App\Models\Patient;
@@ -94,9 +95,9 @@ class AuthController extends Controller
             "prenom" => ["required", "string"],
             "email" => ["required", "string", "email", "unique:users"],
             "password" => ["required"],
-            "dateNaissance" => ["required", "date"],
+            "dateNaissance" => ["nullable", "date"],
             "telephone" => ["required", "string"],
-            "sexe" => ["required", "in:masculin,féminin"],
+            "sexe" => ["nullable", "in:masculin,féminin"],
             "photo_profil" => ["nullable", "string"],
             "adresse" => ["nullable", "string"],
         ]);
@@ -155,9 +156,9 @@ class AuthController extends Controller
             "prenom" => ["required", "string"],
             "email" => ["required", "string", "email", "unique:users"],
             "password" => ["required"],
-            "dateNaissance" => ["required", "date"],
+            "dateNaissance" => ["nullable", "date"],
             "telephone" => ["required", "string"],
-            "sexe" => ["required", "in:masculin,féminin"],
+            "sexe" => ["nullable", "in:masculin,féminin"],
             "photo_profil" => ["nullable", "string"],
             "adresse" => ["nullable", "string"],
         ]);
@@ -227,14 +228,24 @@ class AuthController extends Controller
         // Récupération des informations de l'utilisateur
         $user = auth()->user();
 
+        // Vérification si l'utilisateur est bloqué
+        if (!$user->is_active) {
+            return response()->json(["message" => "Votre compte a été bloqué."], 403);
+        }
+
+        // Mise à jour de la dernière connexion et du statut
+        $user->update([
+            'derniere_ligne_connexion' => Carbon::now(),
+        ]);
+
         // Récupérer les informations spécifiques selon le rôle
         $roleDetails = null;
         if ($user->hasRole('medecin')) {
-            $roleDetails = $user->medecin; // On suppose que la relation est définie dans le modèle User
+            $roleDetails = $user->medecin;
         } elseif ($user->hasRole('patient')) {
-            $roleDetails = $user->patient; // Même ici
+            $roleDetails = $user->patient;
         } elseif ($user->hasRole('assistant')) {
-            $roleDetails = $user->assistant; // Idem
+            $roleDetails = $user->assistant;
         }
 
         return response()->json([
