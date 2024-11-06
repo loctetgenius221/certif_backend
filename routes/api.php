@@ -49,8 +49,11 @@ Route::middleware(['auth:api'])->group(function () {
     Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy'); // Suppression d'un article
     Route::resource('categories', CategoryController::class);
     Route::resource('comments', CommentController::class);
-    Route::resource('media', MediaController::class);
+    Route::apiResource('/media', MediaController::class)->only('index','store','show','destroy');
+    Route::match(['post', 'put', 'patch'], '/medias/{id}/edit', [MediaController::class, 'update'])
+    ->name('media.update');
     Route::get('/nombrearticle', [CategoryController::class, 'getCategoriesWithArticleCount']);
+    Route::get('/statblog', [ArticleController::class, 'getDashboardStats']);
 });
 
 // Route pour les services

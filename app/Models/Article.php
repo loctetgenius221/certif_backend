@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Media;
 use App\Models\Comment;
 use App\Models\Category;
 use App\Models\Assistant;
@@ -14,10 +15,10 @@ class Article extends Model
 
     protected $guarded = [];
 
-    public function auteur()
-    {
-        return $this->belongsTo(Assistant::class);
-    }
+    // public function auteur()
+    // {
+    //     return $this->belongsTo(Assistant::class);
+    // }
 
     public function categorie()
     {

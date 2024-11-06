@@ -2,15 +2,43 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Media;
 use App\Models\Article;
+use App\Models\Comment;
+use App\Models\Category;
 use App\Models\Assistant;
-use App\Models\Categorie; // Assurez-vous d'importer le modèle Categorie
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\File;
 use App\Http\Requests\StoreArticleRequest;
 use App\Http\Requests\UpdateArticleRequest;
-use Illuminate\Support\Facades\File;
+use App\Models\Categorie; // Assurez-vous d'importer le modèle Categorie
 
 class ArticleController extends Controller
 {
+    public function getDashboardStats()
+    {
+        try {
+            // Récupération des comptes avec des requêtes optimisées
+            $stats = [
+                'articles' => Article::count(),
+                'categories' => Category::count(),
+                'comments' => Comment::count(),
+                'media' => Media::count(),
+            ];
+
+            // Retourner la réponse JSON
+            return $this->customJsonResponse("Les stats", $stats);
+        } catch (\Exception $e) {
+            // Log de l'erreur pour le débogage
+            \Log::error('Erreur lors de la récupération des statistiques du tableau de bord: ' . $e->getMessage());
+
+            // Retourner une réponse d'erreur
+            return response()->json([
+                'message' => 'Erreur lors de la récupération des statistiques.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
     /**
      * Display a listing of the resource.
      */
