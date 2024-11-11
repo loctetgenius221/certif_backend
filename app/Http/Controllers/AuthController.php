@@ -9,6 +9,9 @@ use App\Models\Patient;
 use App\Models\Assistant;
 use Illuminate\Http\Request;
 use App\Models\DossierMedicaux;
+use Illuminate\Support\Facades\DB;
+use App\Notifications\NewPatientRegisteredNotification;
+use App\Notifications\InscriptionUtilisateurNotification;
 
 class AuthController extends Controller
 {
@@ -44,7 +47,7 @@ class AuthController extends Controller
             "adresse" => $request->adresse
         ]);
 
-        // Génération du numéro de patient au format "PAT001"
+        // Génération du numéro de patient
         $lastPatient = Patient::latest('id')->first();
         $numeroPatient = 'PAT' . str_pad(($lastPatient ? $lastPatient->id + 1 : 1), 3, '0', STR_PAD_LEFT);
 
@@ -64,13 +67,32 @@ class AuthController extends Controller
         $dossier = DossierMedicaux::create([
             'numero_dme' => $numeroDME,
             'date_creation' => now(),
-            'antecedents_medicaux' => '', // Initialise avec des champs vides ou selon les besoins
+            'antecedents_medicaux' => '',
             'traitements' => '',
             'notes_observations' => '',
             'intervention_chirurgicale' => '',
             'info_sup' => '',
-            'patient_id' => $patient->id, // Utilise l'ID du patient fraîchement créé
+            'patient_id' => $patient->id,
         ]);
+
+        // Récupérer l'admin
+        $admin = User::role('administrateur')->first();
+
+        // Insertion de la notification dans la table `notifications` pour l'admin
+        if ($admin) {
+            DB::table('notifications')->insert([
+                'contenu' => "Un nouveau patient s'est inscrit : {$user->nom} {$user->prenom} ({$user->email}).",
+                'date_envoi' => Carbon::now(),
+                'destinataire_id' => $admin->id,
+                'rendez_vous_id' => null,  // Pas de rendez-vous associé dans ce cas
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+
+        // Envoi d'une notification par email au patient
+        $user->notify(new InscriptionUtilisateurNotification($user['email'], $request->password, $user->getRoleNames()));
 
         return response()->json([
             "status" => true,
@@ -82,10 +104,11 @@ class AuthController extends Controller
                 "email" => $user->email,
                 "role" => $user->getRoleNames(),
                 "numero_patient" => $numeroPatient,
-                "numero_dme" => $numeroDME // Retourne le numéro du dossier médical
+                "numero_dme" => $numeroDME
             ]
         ]);
     }
+
 
 
     // Méthode pour inscrire un médecin
@@ -132,6 +155,9 @@ class AuthController extends Controller
 
         // Assignation du rôle "médecin"
         $user->assignRole('medecin');
+
+        // Notifier le nouvel utilisateur
+        $user->notify(new InscriptionUtilisateurNotification($user['email'], $request->password, $user->getRoleNames()));
 
         return response()->json([
             "status" => true,
@@ -188,6 +214,15 @@ class AuthController extends Controller
 
         // Assignation du rôle "assistant"
         $user->assignRole('assistant');
+
+         // Notifier l'admin
+        // $admin = User::role('administrateur')->first();
+        // $admin->notify(new NewUserNotification($user));
+
+        // // Notifier le nouvel utilisateur
+        // $user->notify(new NewUserNotification($user, $request->password));
+        $user->notify(new InscriptionUtilisateurNotification($user['email'], $request->password, $user->getRoleNames()));
+
 
         return response()->json([
             "status" => true,

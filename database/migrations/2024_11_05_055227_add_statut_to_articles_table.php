@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('articles', function (Blueprint $table) {
-            $table->enum('statut', ['publié', 'brouillon'])->default('brouillon');
+            $table->enum('statut', ['publié', 'brouillon', 'programmé'])->default('brouillon');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('articles', function (Blueprint $table) {
-            $table->dropColumn('statut'); 
+            $table->dropColumn('statut');
         });
     }
 };

@@ -5,8 +5,8 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\Medecin;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class MedecinsSeeder extends Seeder
 {
@@ -15,27 +15,6 @@ class MedecinsSeeder extends Seeder
      */
     public function run(): void
     {
-         // Liste des services
-         $services = [
-            1 => 'Odonthologie',
-            2 => 'Cardiologie',
-            3 => 'Neurologie',
-            4 => 'Pneumologie',
-            5 => 'Orthopédie',
-            6 => 'Médecine interne',
-            7 => 'Chirurgie générale',
-            8 => 'Pédiatrie',
-            9 => 'Radiologie',
-            10 => 'Gynécologie-Obstétrique',
-            11 => 'Dermatologie',
-            12 => 'Psychiatrie',
-            13 => 'Ophtalmologie',
-            14 => 'ORL (Oto-Rhino-Laryngologie)',
-            15 => 'Urologie',
-            16 => 'Anesthésie-Réanimation',
-            17 => 'Endocrinologie'
-        ];
-
         // Liste des médecins avec des noms sénégalais
         $medecins = [
             ['nom' => 'Fall', 'prenom' => 'Mansour', 'numeroLicence' => 'MED003', 'annee_experience' => 10],
@@ -57,7 +36,15 @@ class MedecinsSeeder extends Seeder
             ['nom' => 'Sy', 'prenom' => 'Demba', 'numeroLicence' => 'MED019', 'annee_experience' => 6]
         ];
 
-        foreach ($medecins as $key => $medecin) {
+        // Vérifie que les services existent en base de données
+        $serviceIds = DB::table('services')->pluck('id')->all();
+
+        if (empty($serviceIds)) {
+            // Si aucun service n'est trouvé, afficher une erreur et arrêter le seeder
+            throw new \Exception("La table 'services' ne contient aucun enregistrement. Exécutez le seeder des services d'abord.");
+        }
+
+        foreach ($medecins as $medecin) {
             // Créer un utilisateur pour chaque médecin
             $user = User::create([
                 'nom' => $medecin['nom'],
@@ -71,13 +58,13 @@ class MedecinsSeeder extends Seeder
                 'photo_profil' => 'default.png',
             ]);
 
-            // Assigner le médecin à un service
+            // Assigner le médecin à un service aléatoire
             Medecin::create([
                 'numeroLicence' => $medecin['numeroLicence'],
                 'annee_experience' => $medecin['annee_experience'],
                 'hopital_affiliation' => 'Hôpital Fann',
                 'user_id' => $user->id,
-                'service_id' => $key + 1, // Correspond au service
+                'service_id' => $serviceIds[array_rand($serviceIds)], // Sélectionne un ID de service aléatoire
             ]);
         }
     }

@@ -32,8 +32,11 @@ class DatabaseSeeder extends Seeder
             DossierMedicalSeeder::class,
             ServicesTableSeeder::class,
             MedecinsSeeder::class,
-            CategoriesSeeder::class,
+            CategoriesTableSeeder::class,
             ArticleSeeder::class,
+            PlageHoraireSeeder::class,
+            DossierMedicauxJsonSeeder::class,
+            CommentairesSeeder::class,
         ]);
     }
 }

@@ -5,13 +5,16 @@ namespace App\Models;
 use App\Models\User;
 use App\Models\RendezVous;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Notification extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $guarded = [];
+    protected $dates = ['deleted_at'];  
 
     public function rendez_vous()
     {

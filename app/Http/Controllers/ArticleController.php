@@ -56,18 +56,10 @@ class ArticleController extends Controller
         // Récupérez l'utilisateur connecté
         $user = auth()->user();
 
-        // Vérifiez si l'utilisateur est un assistant ou un administrateur
+        // Vérifiez si l'utilisateur est un assistant, un administrateur ou un auteur
         if ($user->hasRole(['assistant', 'administrateur'])) {
-            // Récupérez l'ID de l'assistant
-            $assistant = Assistant::where('user_id', $user->id)->first();
-
-            if (!$assistant) {
-                return response()->json([
-                    "message" => "Assistant non trouvé.",
-                ], 404);
-            }
-
-            $auteurId = $assistant->id; // L'ID de l'assistant
+            // Récupérez l'ID de l'assistant ou de l'administrateur
+            $auteurId = $user->hasRole('administrateur') ? $user->id : Assistant::where('user_id', $user->id)->first()->id;
         } else {
             return response()->json([
                 "message" => "Vous n'êtes pas autorisé à créer un article.",
@@ -80,6 +72,7 @@ class ArticleController extends Controller
         $article->date_publication = $request->date_publication;
         $article->categorie_id = $request->categorie_id; // Assurez-vous que la catégorie est présente
         $article->auteur_id = $auteurId;
+        $article->statut = $request->statut;
 
         // Gestion de l'image
         if ($request->hasFile('image')) {

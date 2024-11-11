@@ -12,6 +12,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\RendezVousController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PlageHoraireController;
 use App\Http\Controllers\ConsultationsController;
 use App\Http\Controllers\DossierMedicauxController;
@@ -47,7 +48,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store'); // Création d'un article
     Route::put('/articles/{article}', [ArticleController::class, 'update'])->name('articles.update'); // Mise à jour d'un article
     Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy'); // Suppression d'un article
-    Route::resource('categories', CategoryController::class);
+    Route::apiResource('categories', CategoryController::class)->only('store','show','update','destroy');
     Route::resource('comments', CommentController::class);
     Route::apiResource('/media', MediaController::class)->only('index','store','show','destroy');
     Route::match(['post', 'put', 'patch'], '/medias/{id}/edit', [MediaController::class, 'update'])
@@ -55,10 +56,22 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/nombrearticle', [CategoryController::class, 'getCategoriesWithArticleCount']);
     Route::get('/statblog', [ArticleController::class, 'getDashboardStats']);
 });
+Route::get('categories', [CategoryController::class, 'index']);
 
 // Route pour les services
 Route::middleware('auth:api')->group(function () {
     Route::apiResource('services', ServiceController::class);
+});
+
+Route::middleware('auth:api')->group(function () {
+    // Récupérer les notifications
+    Route::get('/notifications', [NotificationController::class, 'getNotifications']);
+
+    // Marquer une notification comme lue
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+
+    // Supprimer une notification (soft delete)
+    Route::delete('/notifications/{id}', [NotificationController::class, 'deleteNotification']);
 });
 
 // Route pour les rendez-vous
