@@ -2,12 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\RendezVous;
+use App\Models\Consultations;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Request;
 use App\Http\Requests\StoreRendezVousRequest;
 use App\Http\Requests\UpdateRendezVousRequest;
-use App\Models\RendezVous;
+use App\Services\JitsiTeleconsultationService;
+
 
 class RendezVousController extends Controller
 {
+
+    protected $jitsiService;
+
+    // Injection du service Jitsi via le constructeur
+    public function __construct(JitsiTeleconsultationService $jitsiService)
+    {
+        $this->jitsiService = $jitsiService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -25,33 +40,68 @@ class RendezVousController extends Controller
         // Récupérer l'utilisateur connecté
         $user = auth()->user();
 
-        // Créer un nouvel objet RendezVous
-        $rendezVous = new RendezVous();
-        $rendezVous->created_by = $user->id; // ID de l'utilisateur qui crée le rendez-vous
-        $rendezVous->date = $request->date;
-        $rendezVous->heure_debut = $request->heure_debut;
-        $rendezVous->heure_fin = $request->heure_fin;
-        $rendezVous->type_rendez_vous = $request->type_rendez_vous;
-        $rendezVous->motif = $request->motif;
-        $rendezVous->status = 'à venir';
-        $rendezVous->lieu = $request->lieu;
-        $rendezVous->medecin_id = $request->medecin_id;
+        try {
+            DB::beginTransaction();
 
-        // Vérifier le rôle de l'utilisateur connecté
-        if ($user->hasRole('assistant')) {
-            $rendezVous->patient_id = $request->patient_id;
-        } elseif ($user->hasRole('patient')) {
-            $rendezVous->patient_id = $user->patient->id;
-        } else {
+            // Créer un nouvel objet RendezVous
+            $rendezVous = new RendezVous();
+            $rendezVous->created_by = $user->id;
+            $rendezVous->date = $request->date;
+            $rendezVous->plage_horaire_id = $request->plage_horaire_id;
+            $rendezVous->heure_debut = $request->heure_debut;
+            $rendezVous->heure_fin = $request->heure_fin;
+            $rendezVous->type_rendez_vous = $request->type_rendez_vous;
+            $rendezVous->motif = $request->motif;
+            $rendezVous->status = 'à venir';
+            $rendezVous->lieu = $request->lieu;
+            $rendezVous->medecin_id = $request->medecin_id;
+
+            // Vérifier le rôle de l'utilisateur connecté
+            if ($user->hasRole('assistant')) {
+                $rendezVous->patient_id = $request->patient_id;
+            } elseif ($user->hasRole('patient')) {
+                $rendezVous->patient_id = $user->patient->id;
+            } else {
+                return response()->json([
+                    'message' => 'Accès non autorisé.'
+                ], 403);
+            }
+
+            // Enregistrer le rendez-vous
+            $rendezVous->save();
+
+            // Créer la consultation associée
+            $consultation = new Consultations();
+            $consultation->rendez_vous_id = $rendezVous->id;
+            $consultation->date = $rendezVous->date;
+            $consultation->heure_debut = $rendezVous->heure_debut;
+            $consultation->heure_fin = $rendezVous->heure_fin;
+            $consultation->type_consultation = $request->type_rendez_vous; // Même type que le rendez-vous
+
+            // Si la consultation est en ligne, générer l'URL Jitsi
+            if ($request->type_rendez_vous === 'téléconsultation') {
+                $roomName = 'consultation-' . $rendezVous->id . '-' . now()->timestamp;
+                $consultation->url_teleconsultation = $this->jitsiService->createJitsiRoom($roomName);
+            }
+
+            // Sauvegarder la consultation
+            $consultation->save();
+
+            // Ajouter la consultation à la réponse
+            $rendezVous->consultation = $consultation;
+
+            DB::commit();
+
+            return $this->customJsonResponse("Rendez-vous et consultation créés avec succès", $rendezVous);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
             return response()->json([
-                'message' => 'Accès non autorisé.'
-            ], 403);
+                'message' => 'Une erreur est survenue lors de la création du rendez-vous et de la consultation.',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        // Enregistrer le rendez-vous
-        $rendezVous->save();
-
-        return $this->customJsonResponse("Rendez-vous créé avec succès", $rendezVous);
     }
 
     /**
