@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Medecin;
 use App\Models\RendezVous;
 use App\Models\Consultations;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +13,8 @@ use Illuminate\Support\Facades\Request;
 use App\Http\Requests\StoreRendezVousRequest;
 use App\Http\Requests\UpdateRendezVousRequest;
 use App\Services\JitsiTeleconsultationService;
+use App\Notifications\NewAppointmentNotification;
+use App\Notifications\ConfirmationRendezVousNotification;
 
 
 class RendezVousController extends Controller
@@ -89,6 +94,57 @@ class RendezVousController extends Controller
 
             // Ajouter la consultation à la réponse
             $rendezVous->consultation = $consultation;
+
+            // Récupérer le médecin
+            $medecin = User::find(Medecin::where('id', $rendezVous->medecin_id)->value('user_id'));
+
+            // Création de la notification pour le médecin
+            if ($medecin) {
+                DB::table('notifications')->insert([
+                    'contenu' => sprintf(
+                        'Un nouveau rendez-vous a été programmé avec %s %s le %s à %s.',
+                        $user->nom,
+                        $user->prenom,
+                        Carbon::parse($rendezVous->date)->format('d/m/Y'),
+                        $rendezVous->heure_debut
+                    ),
+                    'date_envoi' => Carbon::now(),
+                    'destinataire_id' => $medecin->id,
+                    'rendez_vous_id' => $rendezVous->id,
+                    'lu' => false,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            // Envoi d'une notification par email au médecin
+            if ($medecin) {
+                $medecin->notify(new NewAppointmentNotification($rendezVous));
+            }
+
+            // Notification pour le patient
+            $patient = $rendezVous->patient->user; // Récupérer l'utilisateur associé au patient
+
+            if ($patient) {
+                // Notification par email et enregistrement dans la base de données
+                $patient->notify(new ConfirmationRendezVousNotification($rendezVous));
+
+                // Insertion manuelle dans la table `notifications` (optionnel, si besoin)
+                DB::table('notifications')->insert([
+                    'contenu' => sprintf(
+                        'Votre rendez-vous pour le %s à %s est confirmé.',
+                        \Carbon\Carbon::parse($rendezVous->date)->format('d/m/Y'),
+                        $rendezVous->heure_debut
+                    ),
+                    'date_envoi' => now(),
+                    'destinataire_id' => $patient->id,
+                    'rendez_vous_id' => $rendezVous->id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                    'lu' => false,
+                ]);
+            }
+
 
             DB::commit();
 
